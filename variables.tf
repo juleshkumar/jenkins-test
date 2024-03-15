@@ -68,4 +68,4 @@ variable "tags" {
   default     = {}
   type        = map(string)
   description = "dev"
-}v  
+}
