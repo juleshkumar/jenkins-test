@@ -1,72 +1,51 @@
-# vpc/variables.tf
-
-variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
+variable "name" {
+  default     = "Default"
   type        = string
-  default     = "10.0.0.0/16"
-
-
+  description = "Test VPC"
 }
 
-variable "vpc_tags" {
-  description = "Tags for the VPC"
+variable "project" {
   type        = string
-  default     = "vpc-dev"
-}
-
-variable "igw_tags" {
-  description = "Tags for the IGW"
-  type        = string
-  default     = "igw-dev"
+  description = "Testing VPC"
 }
 
 variable "environment" {
   type        = string
-  description = "environment for vpc"
-  default     = "dev"
+  description = "dev"
 }
 
-variable "azs" {
-  type        = list(string)
-  description = "availability zones"
-  default     = ["ap-south-1a", "ap-south-1b", "ap-south-1c"]
-}
-
-variable "security_group" {
+variable "region" {
+  default     = "ap-south-1"
   type        = string
-  description = "vpc security group "
-  default     = "vpc-sg"
+  description = "Region of the VPC"
 }
 
-variable "nat-count" {
-  type        = number
-  description = "vpc security group "
-  default     = "4"
-  
+variable "cidr_block" {
+  default     = "10.0.0.0/16"
+  type        = string
+  description = "CIDR block for the VPC"
 }
 
-
-variable "public-count" {
-  type        = number
-  description = "vpc public subnet count group "
-  default     = "2"
+variable "public_subnet_cidr_blocks" {
+  default     = ["10.0.0.0/24", "10.0.2.0/24"]
+  type        = list(any)
+  description = "List of public subnet CIDR blocks"
 }
 
-variable "private-count" {
-  type        = number
-  description = "vpc public subnet count group "
-  default     = "2"
+variable "private_subnet_cidr_blocks" {
+  default     = ["10.0.1.0/24", "10.0.3.0/24"]
+  type        = list(any)
+  description = "List of private subnet CIDR blocks"
 }
 
-variable "public-subnet_mask" {
-  type        = number
-  description = "Subnet mask value for CIDR calculation"
-  default     = "4"
+variable "availability_zones" {
+  default     = ["us-east-1a", "us-east-1b"]
+  type        = list(any)
+  description = "List of availability zones"
 }
 
-variable "private-subnet_mask" {
-  type        = number
-  description = "Subnet mask value for CIDR calculation"
-  default     = "4"
-
+variable "tags" {
+  default     = {}
+  type        = map(string)
+  description = "dev"
 }
