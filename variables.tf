@@ -29,37 +29,37 @@ variable "cidr_block" {
 }
 
 variable "public1_subnet_cidr_blocks" {
-  default     = ["10.0.0.0/24"]
+  default     = "10.0.0.0/24"
   type        = string
   description = "List of public 1 subnet CIDR blocks"
 }
 
 variable "public2_subnet_cidr_blocks" {
-  default     = [ "10.0.2.0/24"]
+  default     = "10.0.2.0/24"
   type        = string
   description = "List of public 2 subnet CIDR blocks"
 }
 
 variable "private1_subnet_cidr_blocks" {
-  default     = ["10.0.1.0/24"]
+  default     = "10.0.1.0/24"
   type        = string
   description = "List of private subnet CIDR blocks"
 }
 
 variable "private2_subnet_cidr_blocks" {
-  default     = [ "10.0.3.0/24"]
+  default     = "10.0.3.0/24"
   type        = string
   description = "List of private subnet CIDR blocks"
 }
 
 variable "availability_zones1" {
-  default     = ["ap-south-1a"]
+  default     = "ap-south-1a"
   type        = string
   description = "List of availability zones 1"
 }
 
 variable "availability_zones2" {
-  default     = [ "ap-south-1b"]
+  default     = "ap-south-1b"
   type        = string
   description = "List of availability zones 2"
 }
