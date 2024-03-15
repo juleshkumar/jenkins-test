@@ -1,13 +1,3 @@
-variable "vpc_parameters" {
-  description = "VPC parameters"
-  type = map(object({
-    cidr_block           = 10.0.0.0/16
-    enable_dns_support   = optional(bool, true)
-    enable_dns_hostnames = optional(bool, true)
-    tags                 = optional(map(string), {})
-  }))
-  default = {}
-}
 
 variable "azs" {
  type        = list(string)
