@@ -30,7 +30,7 @@ resource "aws_internet_gateway" "default" {
 }
 
 resource "aws_route_table" "private" {
-  count = length(var.private_subnet_cidr_blocks)
+  count = length(var.private1_subnet_cidr_blocks)
 
   vpc_id = aws_vpc.default.id
 
@@ -72,7 +72,7 @@ resource "aws_route" "public" {
 }
 
 resource "aws_subnet" "private1" {
-  count = length(var.private_subnet_cidr_blocks)
+  count = length(var.private1_subnet_cidr_blocks)
 
   vpc_id            = aws_vpc.default.id
   cidr_block        = var.private1_subnet_cidr_blocks
@@ -89,7 +89,7 @@ resource "aws_subnet" "private1" {
 }
 
 resource "aws_subnet" "private2" {
-  count = length(var.private_subnet_cidr_blocks)
+  count = length(var.private2_subnet_cidr_blocks)
 
   vpc_id            = aws_vpc.default.id
   cidr_block        = var.private2_subnet_cidr_blocks
@@ -106,7 +106,7 @@ resource "aws_subnet" "private2" {
 }
 
 resource "aws_subnet" "public1" {
-  count = length(var.public_subnet_cidr_blocks)
+  count = length(var.public1_subnet_cidr_blocks)
 
   vpc_id                  = aws_vpc.default.id
   cidr_block              = var.public1_subnet_cidr_blocks
@@ -124,7 +124,7 @@ resource "aws_subnet" "public1" {
 }
 
 resource "aws_subnet" "public2" {
-  count = length(var.public_subnet_cidr_blocks)
+  count = length(var.public2_subnet_cidr_blocks)
 
   vpc_id                  = aws_vpc.default.id
   cidr_block              = var.public2_subnet_cidr_blocks
@@ -178,7 +178,7 @@ resource "aws_vpc_endpoint" "s3" {
 # NAT resources
 #
 resource "aws_eip" "nat" {
-  count = length(var.public_subnet_cidr_blocks)
+  count = length(var.public1_subnet_cidr_blocks)
 
   vpc = true
 }
