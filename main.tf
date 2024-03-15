@@ -71,16 +71,16 @@ resource "aws_route" "public" {
   gateway_id             = aws_internet_gateway.default.id
 }
 
-resource "aws_subnet" "private" {
+resource "aws_subnet" "private1" {
   count = length(var.private_subnet_cidr_blocks)
 
   vpc_id            = aws_vpc.default.id
-  cidr_block        = var.private_subnet_cidr_blocks[count.index]
-  availability_zone = var.availability_zones[count.index]
+  cidr_block        = var.private1_subnet_cidr_blocks
+  availability_zone = var.availability_zones1
 
   tags = merge(
     {
-      Name        = "PrivateSubnet",
+      Name        = "PrivateSubnet-1",
       Project     = var.project,
       Environment = var.environment
     },
@@ -88,17 +88,51 @@ resource "aws_subnet" "private" {
   )
 }
 
-resource "aws_subnet" "public" {
+resource "aws_subnet" "private2" {
+  count = length(var.private_subnet_cidr_blocks)
+
+  vpc_id            = aws_vpc.default.id
+  cidr_block        = var.private2_subnet_cidr_blocks
+  availability_zone = var.availability_zones2
+
+  tags = merge(
+    {
+      Name        = "PrivateSubnet-2",
+      Project     = var.project,
+      Environment = var.environment
+    },
+    var.tags
+  )
+}
+
+resource "aws_subnet" "public1" {
   count = length(var.public_subnet_cidr_blocks)
 
   vpc_id                  = aws_vpc.default.id
-  cidr_block              = var.public_subnet_cidr_blocks[count.index]
-  availability_zone       = var.availability_zones[count.index]
+  cidr_block              = var.public1_subnet_cidr_blocks
+  availability_zone       = var.availability_zones1
   map_public_ip_on_launch = true
 
   tags = merge(
     {
-      Name        = "PublicSubnet",
+      Name        = "PublicSubnet-1",
+      Project     = var.project,
+      Environment = var.environment
+    },
+    var.tags
+  )
+}
+
+resource "aws_subnet" "public2" {
+  count = length(var.public_subnet_cidr_blocks)
+
+  vpc_id                  = aws_vpc.default.id
+  cidr_block              = var.public2_subnet_cidr_blocks
+  availability_zone       = var.availability_zones2
+
+  tags = merge(
+    {
+      Name        = "PublicSubnet-2",
       Project     = var.project,
       Environment = var.environment
     },
@@ -109,14 +143,16 @@ resource "aws_subnet" "public" {
 resource "aws_route_table_association" "private" {
   count = length(var.private_subnet_cidr_blocks)
 
-  subnet_id      = aws_subnet.private[count.index].id
+  subnet_id      = aws_subnet.private1.id
+  subnet_id      = aws_subnet.private2.id
   route_table_id = aws_route_table.private[count.index].id
 }
 
 resource "aws_route_table_association" "public" {
   count = length(var.public_subnet_cidr_blocks)
 
-  subnet_id      = aws_subnet.public[count.index].id
+  subnet_id      = aws_subnet.public1.id
+  subnet_id      = aws_subnet.public2.id
   route_table_id = aws_route_table.public.id
 }
 
@@ -153,7 +189,7 @@ resource "aws_nat_gateway" "default" {
   count = length(var.public_subnet_cidr_blocks)
 
   allocation_id = aws_eip.nat[count.index].id
-  subnet_id     = aws_subnet.public[count.index].id
+  subnet_id     = aws_subnet.public1.id
 
   tags = merge(
     {
