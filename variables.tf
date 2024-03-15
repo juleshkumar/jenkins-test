@@ -28,26 +28,44 @@ variable "cidr_block" {
   description = "CIDR block for the VPC"
 }
 
-variable "public_subnet_cidr_blocks" {
-  default     = ["10.0.0.0/24", "10.0.2.0/24"]
+variable "public1_subnet_cidr_blocks" {
+  default     = ["10.0.0.0/24"]
   type        = list(any)
-  description = "List of public subnet CIDR blocks"
+  description = "List of public 1 subnet CIDR blocks"
 }
 
-variable "private_subnet_cidr_blocks" {
-  default     = ["10.0.1.0/24", "10.0.3.0/24"]
+variable "public2_subnet_cidr_blocks" {
+  default     = [ "10.0.2.0/24"]
+  type        = list(any)
+  description = "List of public 2 subnet CIDR blocks"
+}
+
+variable "private1_subnet_cidr_blocks" {
+  default     = ["10.0.1.0/24"]
   type        = list(any)
   description = "List of private subnet CIDR blocks"
 }
 
-variable "availability_zones" {
-  default     = ["ap-south-1a", "ap-south-1b"]
+variable "private2_subnet_cidr_blocks" {
+  default     = [ "10.0.3.0/24"]
   type        = list(any)
-  description = "List of availability zones"
+  description = "List of private subnet CIDR blocks"
+}
+
+variable "availability_zones1" {
+  default     = ["ap-south-1a"]
+  type        = list(any)
+  description = "List of availability zones 1"
+}
+
+variable "availability_zones2" {
+  default     = [ "ap-south-1b"]
+  type        = list(any)
+  description = "List of availability zones 2"
 }
 
 variable "tags" {
   default     = {}
   type        = map(string)
   description = "dev"
-}
+}v  
