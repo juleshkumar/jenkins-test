@@ -8,41 +8,54 @@ resource "aws_vpc" "this" {
   })
 }
 
-resource "aws_subnet" "this" {
-  for_each   = var.subnet_parameters
-  vpc_id     = aws_vpc.this[each.value.vpc_name].id
-  cidr_block = each.value.cidr_block
-  tags = merge(each.value.tags, {
-    Name : each.key
-  })
+
+resource "aws_subnet" "public_subnets" {
+ count             = length(var.public_subnet_cidrs)
+ vpc_id            = aws_vpc.main.id
+ cidr_block        = element(var.public_subnet_cidrs, count.index)
+ availability_zone = element(var.azs, count.index)
+ 
+ tags = {
+   Name = "Public Subnet ${count.index + 1}"
+ }
+}
+ 
+resource "aws_subnet" "private_subnets" {
+ count             = length(var.private_subnet_cidrs)
+ vpc_id            = aws_vpc.main.id
+ cidr_block        = element(var.private_subnet_cidrs, count.index)
+ availability_zone = element(var.azs, count.index)
+ 
+ tags = {
+   Name = "Private Subnet ${count.index + 1}"
+ }
 }
 
-resource "aws_internet_gateway" "this" {
-  for_each = var.igw_parameters
-  vpc_id   = aws_vpc.this[each.value.vpc_name].id
-  tags = merge(each.value.tags, {
-    Name : each.key
-  })
+resource "aws_internet_gateway" "gw" {
+ vpc_id = aws_vpc.main.id
+ 
+ tags = {
+   Name = "Project VPC IG"
+ }
 }
 
-resource "aws_route_table" "this" {
-  for_each = var.rt_parameters
-  vpc_id   = aws_vpc.this[each.value.vpc_name].id
-  tags = merge(each.value.tags, {
-    Name : each.key
-  })
 
-  dynamic "route" {
-    for_each = each.value.routes
-    content {
-      cidr_block = route.value.cidr_block
-      gateway_id = route.value.use_igw ? aws_internet_gateway.this[route.value.gateway_id].id : route.value.gateway_id
-    }
+resource "aws_route_table" "second_rt" {
+  vpc_id = aws_vpc.main.id
+  
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.gw.id
   }
-}
+  
+  tags = {
+    Name = "2nd Route Table"
+  }
+ }
 
-resource "aws_route_table_association" "this" {
-  for_each       = var.rt_association_parameters
-  subnet_id      = aws_subnet.this[each.value.subnet_name].id
-  route_table_id = aws_route_table.this[each.value.rt_name].id
-}
+
+ resource "aws_route_table_association" "public_subnet_asso" {
+  count = length(var.public_subnet_cidrs)
+  subnet_id      = element(aws_subnet.public_subnets[*].id, count.index)
+  route_table_id = aws_route_table.second_rt.id
+ }
