@@ -10,13 +10,13 @@ variable "vpc_cidr" {
 
 variable "vpc_tags" {
   description = "Tags for the VPC"
-  type        = map(string)
+  type        = string
   default     = "vpc-dev"
 }
 
 variable "igw_tags" {
   description = "Tags for the IGW"
-  type        = map(string)
+  type        = string
   default     = "igw-dev"
 }
 
@@ -29,7 +29,7 @@ variable "environment" {
 variable "azs" {
   type        = list(string)
   description = "availability zones"
-  default     = "ap-south-1a", "ap-south-1b", "ap-south-1c"
+  default     = ["ap-south-1a", "ap-south-1b", "ap-south-1c"]
 }
 
 variable "security_group" {
