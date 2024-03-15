@@ -143,16 +143,16 @@ resource "aws_subnet" "public2" {
 resource "aws_route_table_association" "private" {
   count = length(var.private_subnet_cidr_blocks)
 
-  subnet_id      = aws_subnet.private1.id
-  subnet_id      = aws_subnet.private2.id
+  subnet_id1      = aws_subnet.private1.id
+  subnet_id2      = aws_subnet.private2.id
   route_table_id = aws_route_table.private[count.index].id
 }
 
 resource "aws_route_table_association" "public" {
   count = length(var.public_subnet_cidr_blocks)
 
-  subnet_id      = aws_subnet.public1.id
-  subnet_id      = aws_subnet.public2.id
+  subnet_id1      = aws_subnet.public1.id
+  subnet_id2      = aws_subnet.public2.id
   route_table_id = aws_route_table.public.id
 }
 
