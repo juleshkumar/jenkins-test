@@ -6,12 +6,14 @@ variable "name" {
 
 variable "project" {
   type        = string
-  description = "Testing VPC"
+  description = "Testing"
+  default     = "Testing"
 }
 
 variable "environment" {
   type        = string
   description = "dev"
+  default     = "Testing"   
 }
 
 variable "region" {
@@ -39,7 +41,7 @@ variable "private_subnet_cidr_blocks" {
 }
 
 variable "availability_zones" {
-  default     = ["us-east-1a", "us-east-1b"]
+  default     = ["ap-south-1a", "ap-south-1b"]
   type        = list(any)
   description = "List of availability zones"
 }
