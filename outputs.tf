@@ -1,34 +1,29 @@
 output "id" {
-  value       = aws_vpc.default.id
+  value       = aws_vpc.test.id
   description = "VPC ID"
 }
 
-output "public1_subnet_ids" {
-  value       = aws_subnet.public1.id
-  description = "List of public subnet IDs"
+output "public_subnet_a_ids" {
+  value       = aws_subnet.public-sub-1a.id
+  description = "public subnet 1a id"
 }
 
-output "public2_subnet_ids" {
-  value       = aws_subnet.public2.id
-  description = "List of public subnet IDs"
+output "public_subnet_b_ids" {
+  value       = aws_subnet.public-sub-1b.id
+  description = "public subnet 1b id"
 }
 
-output "private1_subnet_ids" {
-  value       = aws_subnet.private1.id
-  description = "List of private subnet IDs"
+output "private_subnet_a_ids" {
+  value       = aws_subnet.private-sub-1a.id
+  description = "private subnet 1a id"
 }
 
-output "private2_subnet_ids" {
-  value       = aws_subnet.private2.id
-  description = "List of private subnet IDs"
+output "private_subnet_b_ids" {
+  value       = aws_subnet.private-sub-1b.id
+  description = "private subnet 1b id"
 }
 
 output "cidr_block" {
   value       = var.cidr_block
   description = "The CIDR block associated with the VPC"
-}
-
-output "nat_gateway_ips" {
-  value       = aws_eip.nat.*.public_ip
-  description = "List of Elastic IPs associated with NAT gateways"
 }
