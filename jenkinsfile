@@ -54,7 +54,6 @@ pipeline {
                     -var 'public_subnet_b_cidr_blocks=${params.public_subnet_b_cidr_blocks}' --auto-approve"
                     -var 'private_subnet_a_cidr_blocks=${params.private_subnet_a_cidr_blocks}' --auto-approve"
                     -var 'private_subnet_b_cidr_blocks=${params.private_subnet_b_cidr_blocks}' --auto-approve"
-                    -var 'region=${params.region}' --auto-approve"
             }
         }
         stage('terraform destroy'){
@@ -71,7 +70,6 @@ pipeline {
                     -var 'public_subnet_b_cidr_blocks=${params.public_subnet_b_cidr_blocks}' --auto-approve"
                     -var 'private_subnet_a_cidr_blocks=${params.private_subnet_a_cidr_blocks}' --auto-approve"
                     -var 'private_subnet_b_cidr_blocks=${params.private_subnet_b_cidr_blocks}' --auto-approve"
-                    -var 'region=${params.region}' --auto-approve"
             }
         }
     }
