@@ -2,8 +2,6 @@ pipeline {
     agent any
 
     parameters {
-        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
-        choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
         string(name: 'name', defaultValue: 'vpc', description: 'enter name of your vpc')
         string(name: 'project', defaultValue: 'testing', description: 'enter your project name')
         string(name: 'environment', defaultValue: 'dev', description: 'mention env name')
@@ -26,7 +24,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'vpc', url: 'https://github.com/juleshkumar/jenkins-test.git'
+                git branch: 'main', url: 'https://github.com/juleshkumar/jenkins-test.git'
             }
         }
         stage('Terraform init') {
@@ -42,25 +40,39 @@ pipeline {
             }
         }
         
-        stage('Apply / Destroy') {
-            steps {
-                script {
-                    if (params.action == 'apply') {
-                        if (!params.autoApprove) {
-                            def plan = readFile 'tfplan.txt'
-                            input message: "Do you want to apply the plan?",
-                            parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
-                        }
-
-                        sh 'terraform ${action} -input=false tfplan'
-                    } else if (params.action == 'destroy') {
-                        sh 'terraform ${action} --auto-approve'
-                    } else {
-                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
-                    }
-                }
+        stage('terraform apply'){
+            steps{
+                 sh "terraform apply
+                    -var 'name=${params.name}' --auto-approve"
+                    -var 'region=${params.region}' --auto-approve"
+                    -var 'project=${params.project}' --auto-approve"
+                    -var 'environment=${params.environment}' --auto-approve"
+                    -var 'cidr_block=${params.cidr_block}' --auto-approve"
+                    -var 'availability_zone_one=${params.availability_zone_one}' --auto-approve"
+                    -var 'availability_zone_two=${params.availability_zone_two}' --auto-approve"
+                    -var 'public_subnet_a_cidr_blocks=${params.public_subnet_a_cidr_blocks}' --auto-approve"
+                    -var 'public_subnet_b_cidr_blocks=${params.public_subnet_b_cidr_blocks}' --auto-approve"
+                    -var 'private_subnet_a_cidr_blocks=${params.private_subnet_a_cidr_blocks}' --auto-approve"
+                    -var 'private_subnet_b_cidr_blocks=${params.private_subnet_b_cidr_blocks}' --auto-approve"
+                    -var 'region=${params.region}' --auto-approve"
             }
         }
-
+        stage('terraform destroy'){
+            steps{
+              sh "terraform destroy 
+                    -var 'name=${params.name}' --auto-approve"
+                    -var 'region=${params.region}' --auto-approve"
+                    -var 'project=${params.project}' --auto-approve"
+                    -var 'environment=${params.environment}' --auto-approve"
+                    -var 'cidr_block=${params.cidr_block}' --auto-approve"
+                    -var 'availability_zone_one=${params.availability_zone_one}' --auto-approve"
+                    -var 'availability_zone_two=${params.availability_zone_two}' --auto-approve"
+                    -var 'public_subnet_a_cidr_blocks=${params.public_subnet_a_cidr_blocks}' --auto-approve"
+                    -var 'public_subnet_b_cidr_blocks=${params.public_subnet_b_cidr_blocks}' --auto-approve"
+                    -var 'private_subnet_a_cidr_blocks=${params.private_subnet_a_cidr_blocks}' --auto-approve"
+                    -var 'private_subnet_b_cidr_blocks=${params.private_subnet_b_cidr_blocks}' --auto-approve"
+                    -var 'region=${params.region}' --auto-approve"
+            }
+        }
     }
 }
