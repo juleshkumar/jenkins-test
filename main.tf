@@ -43,7 +43,7 @@ resource "aws_internet_gateway" "test" {
 }
 
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.default.id
+  vpc_id = aws_vpc.test.id
 }
 
 resource "aws_route" "public" {
@@ -92,13 +92,13 @@ resource "aws_route_table_association" "public2" {
 
 resource "aws_route_table_association" "private1" {
 
-  subnet_id      = aws_subnet.private.private-sub-1a.id
+  subnet_id      = aws_subnet.private-sub-1a.id
   route_table_id = aws_route_table.private.id
 }
 
 resource "aws_route_table_association" "private2" {
 
-  subnet_id      = aws_subnet.private.private-sub-1b.id
+  subnet_id      = aws_subnet.private-sub-1b.id
   route_table_id = aws_route_table.private.id
 }
 
