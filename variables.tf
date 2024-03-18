@@ -1,19 +1,19 @@
 variable "name" {
-  default     = "Default"
+  default     = "test-vpc"
   type        = string
-  description = "Test VPC"
+  description = "Name of the VPC"
 }
 
 variable "project" {
+  default     = "testing"
   type        = string
-  description = "Testing"
-  default     = "Testing"
+  description = "Name of project this VPC is meant to house"
 }
 
 variable "environment" {
+  default     = "dev"
   type        = string
-  description = "dev"
-  default     = "Testing"   
+  description = "Name of environment this VPC is targeting"
 }
 
 variable "region" {
@@ -28,44 +28,38 @@ variable "cidr_block" {
   description = "CIDR block for the VPC"
 }
 
-variable "public1_subnet_cidr_blocks" {
-  default     = "10.0.0.0/24"
-  type        = string
-  description = "List of public 1 subnet CIDR blocks"
-}
-
-variable "public2_subnet_cidr_blocks" {
-  default     = "10.0.2.0/24"
-  type        = string
-  description = "List of public 2 subnet CIDR blocks"
-}
-
-variable "private1_subnet_cidr_blocks" {
-  default     = "10.0.1.0/24"
-  type        = string
-  description = "List of private subnet CIDR blocks"
-}
-
-variable "private2_subnet_cidr_blocks" {
-  default     = "10.0.3.0/24"
-  type        = string
-  description = "List of private subnet CIDR blocks"
-}
-
-variable "availability_zones1" {
+variable "availability_zone_one" {
   default     = "ap-south-1a"
   type        = string
-  description = "List of availability zones 1"
+  description = "List of availability zone 1"
 }
 
-variable "availability_zones2" {
+variable "availability_zone_two" {
   default     = "ap-south-1b"
   type        = string
-  description = "List of availability zones 2"
+  description = "List of availability zone 2"
 }
 
-variable "tags" {
-  default     = {}
-  type        = map(string)
-  description = "dev"
+variable "public_subnet_a_cidr_blocks" {
+  default     = "10.0.0.0/24"
+  type        = string
+  description = "public subnet 1a CIDR blocks"
+}
+
+variable "public_subnet_b_cidr_blocks" {
+  default     = "10.0.0.0/24"
+  type        = string
+  description = "public subnet 1b CIDR blocks"
+}
+
+variable "private_subnet_a_cidr_blocks" {
+  default     = "10.0.1.0/24"
+  type        = string
+  description = "private subnet 1a CIDR blocks"
+}
+
+variable "private_subnet_b_cidr_blocks" {
+  default     = "10.0.1.0/24"
+  type        = string
+  description = "private subnet 1b CIDR blocks"
 }
