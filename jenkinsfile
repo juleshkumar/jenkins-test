@@ -42,7 +42,7 @@ pipeline {
         
         stage('terraform apply'){
             steps{
-                 sh "terraform apply \
+                 sh terraform apply \
                     -var 'name=${params.name}' --auto-approve" \
                     -var 'region=${params.region}' --auto-approve" \
                     -var 'project=${params.project}' --auto-approve" \
@@ -58,7 +58,7 @@ pipeline {
         }
         stage('terraform destroy'){
             steps{
-              sh "terraform destroy \
+                 sh terraform destroy \
                     -var 'name=${params.name}' --auto-approve" \
                     -var 'region=${params.region}' --auto-approve" \
                     -var 'project=${params.project}' --auto-approve" \
