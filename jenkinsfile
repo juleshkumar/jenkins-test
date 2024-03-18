@@ -43,33 +43,33 @@ pipeline {
         stage('terraform apply'){
             steps{
                  sh terraform apply \
-                    -var 'name=${params.name}' --auto-approve" \
-                    -var 'region=${params.region}' --auto-approve" \
-                    -var 'project=${params.project}' --auto-approve" \
-                    -var 'environment=${params.environment}' --auto-approve" \
-                    -var 'cidr_block=${params.cidr_block}' --auto-approve" \
-                    -var 'availability_zone_one=${params.availability_zone_one}' --auto-approve" \
-                    -var 'availability_zone_two=${params.availability_zone_two}' --auto-approve" \
-                    -var 'public_subnet_a_cidr_blocks=${params.public_subnet_a_cidr_blocks}' --auto-approve" \
-                    -var 'public_subnet_b_cidr_blocks=${params.public_subnet_b_cidr_blocks}' --auto-approve" \
-                    -var 'private_subnet_a_cidr_blocks=${params.private_subnet_a_cidr_blocks}' --auto-approve" \
-                    -var 'private_subnet_b_cidr_blocks=${params.private_subnet_b_cidr_blocks}' --auto-approve"
+                    -var 'name=$(name)' --auto-approve \
+                    -var 'region=$(region)' --auto-approve \
+                    -var 'project=$(project)' --auto-approve \
+                    -var 'environment=$(environment)' --auto-approve \
+                    -var 'cidr_block=$(cidr_block)' --auto-approve \
+                    -var 'availability_zone_one=$(availability_zone_one)' --auto-approve \
+                    -var 'availability_zone_two=$(availability_zone_two)' --auto-approve \
+                    -var 'public_subnet_a_cidr_blocks=$(public_subnet_a_cidr_blocks)' --auto-approve \
+                    -var 'public_subnet_b_cidr_blocks=$(public_subnet_b_cidr_blocks)' --auto-approve \
+                    -var 'private_subnet_a_cidr_blocks=$(private_subnet_a_cidr_blocks)' --auto-approve \
+                    -var 'private_subnet_b_cidr_blocks=$(private_subnet_b_cidr_blocks)' --auto-approve
             }
         }
         stage('terraform destroy'){
             steps{
                  sh terraform destroy \
-                    -var 'name=${params.name}' --auto-approve" \
-                    -var 'region=${params.region}' --auto-approve" \
-                    -var 'project=${params.project}' --auto-approve" \
-                    -var 'environment=${params.environment}' --auto-approve" \
-                    -var 'cidr_block=${params.cidr_block}' --auto-approve" \
-                    -var 'availability_zone_one=${params.availability_zone_one}' --auto-approve" \
-                    -var 'availability_zone_two=${params.availability_zone_two}' --auto-approve" \
-                    -var 'public_subnet_a_cidr_blocks=${params.public_subnet_a_cidr_blocks}' --auto-approve" \
-                    -var 'public_subnet_b_cidr_blocks=${params.public_subnet_b_cidr_blocks}' --auto-approve" \
-                    -var 'private_subnet_a_cidr_blocks=${params.private_subnet_a_cidr_blocks}' --auto-approve" \
-                    -var 'private_subnet_b_cidr_blocks=${params.private_subnet_b_cidr_blocks}' --auto-approve"
+                    -var 'name=$(name)' --auto-approve \
+                    -var 'region=$(region)' --auto-approve \
+                    -var 'project=$(project)' --auto-approve \
+                    -var 'environment=$(environment)' --auto-approve \
+                    -var 'cidr_block=$(cidr_block)' --auto-approve \
+                    -var 'availability_zone_one=$(availability_zone_one)' --auto-approve \
+                    -var 'availability_zone_two=$(availability_zone_two)' --auto-approve \
+                    -var 'public_subnet_a_cidr_blocks=$(public_subnet_a_cidr_blocks)' --auto-approve \
+                    -var 'public_subnet_b_cidr_blocks=$(public_subnet_b_cidr_blocks)' --auto-approve \
+                    -var 'private_subnet_a_cidr_blocks=$(private_subnet_a_cidr_blocks)' --auto-approve \
+                    -var 'private_subnet_b_cidr_blocks=$(private_subnet_b_cidr_blocks)' --auto-approve
             }
         }
     }
