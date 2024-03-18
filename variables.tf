@@ -47,19 +47,19 @@ variable "public_subnet_a_cidr_blocks" {
 }
 
 variable "public_subnet_b_cidr_blocks" {
-  default     = "10.0.0.0/24"
+  default     = "10.0.1.0/24"
   type        = string
   description = "public subnet 1b CIDR blocks"
 }
 
 variable "private_subnet_a_cidr_blocks" {
-  default     = "10.0.1.0/24"
+  default     = "10.0.2.0/24"
   type        = string
   description = "private subnet 1a CIDR blocks"
 }
 
 variable "private_subnet_b_cidr_blocks" {
-  default     = "10.0.1.0/24"
+  default     = "10.0.3.0/24"
   type        = string
   description = "private subnet 1b CIDR blocks"
 }
