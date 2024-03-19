@@ -101,13 +101,3 @@ resource "aws_route_table_association" "private2" {
   subnet_id      = aws_subnet.private-sub-1b.id
   route_table_id = aws_route_table.private.id
 }
-
-resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = aws_vpc.test.id
-  service_name = "com.amazonaws.${var.region}.s3"
-  route_table_ids = flatten([
-    aws_route_table.public.id,
-    aws_route_table.private.id
-  ])
-
-}
