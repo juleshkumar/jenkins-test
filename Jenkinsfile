@@ -36,7 +36,18 @@ pipeline {
         }
         stage('Plan') {
             steps {
-                sh 'terraform plan -out tfplan'
+                sh 'terraform plan -out tfplan' \
+                        - var 'name=$(name)' \
+                                - var 'project=$(project)' \
+                                - var 'environment=$(environment)' \
+                                - var 'region=$(region)' \
+                                - var 'cidr_block=$(cidr_block)' \
+                                - var 'availability_zone_one=$(availability_zone_one)' \
+                                - var 'availability_zone_two=$(availability_zone_two)' \
+                                - var 'public_subnet_a_cidr_blocks=$(public_subnet_a_cidr_blocks)' \
+                                - var 'public_subnet_b_cidr_blocks=$(public_subnet_b_cidr_blocks)' \
+                                - var 'private_subnet_a_cidr_blocks=$(private_subnet_a_cidr_blocks)' \
+                                - var 'private_subnet_b_cidr_blocks=$(private_subnet_b_cidr_blocks)' 
                 sh 'terraform show -no-color tfplan > tfplan.txt'
 
             }
@@ -65,7 +76,7 @@ pipeline {
                                 - var 'public_subnet_a_cidr_blocks=$(public_subnet_a_cidr_blocks)' \
                                 - var 'public_subnet_b_cidr_blocks=$(public_subnet_b_cidr_blocks)' \
                                 - var 'private_subnet_a_cidr_blocks=$(private_subnet_a_cidr_blocks)' \
-                                - var 'private_subnet_b_cidr_blocks=$(private_subnet_b_cidr_blocks)' \
+                                - var 'private_subnet_b_cidr_blocks=$(private_subnet_b_cidr_blocks)' 
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                     }
