@@ -91,7 +91,7 @@ pipeline {
                 script {
                     def outputs = readJSON file: 'terraform_outputs.json'
                     env.TF_OUTPUT_VALUE_1 = outputs.vpc_id
-                    env.TF_OUTPUT_VALUE_2 = outputs.public_a_subnets_id
+                    env.TF_OUTPUT_VALUE_2 = outputs.public_subnet_a_ids
                     // Repeat for other output values as needed
                 }
             }
