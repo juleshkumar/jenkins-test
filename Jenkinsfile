@@ -82,5 +82,11 @@ pipeline {
                 }
             }
         }
+        
+        stage('Archive Outputs') {
+            steps {
+                archiveArtifacts artifacts: 'outputs.tf', onlyIfSuccessful: true
+            }
+        }
     }
 }
