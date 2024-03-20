@@ -83,10 +83,27 @@ pipeline {
             }
         }
         
-        stage('Archive Outputs') {
+        stage('Save Outputs') {
             steps {
-                archiveArtifacts artifacts: 'outputs.tf', onlyIfSuccessful: true
+                // Retrieve the values from outputs.tf and save them in a file
+                sh 'terraform output -json > terraform_outputs.json'
+                // You can also save the values as environment variables if needed
+                script {
+                    def outputs = readJSON file: 'terraform_outputs.json'
+                    env.TF_OUTPUT_VALUE_1 = outputs.vpc_id
+                    env.TF_OUTPUT_VALUE_2 = outputs.public_a_subnets_id
+                    // Repeat for other output values as needed
+                }
             }
         }
+        // Additional stages...
+    }
+    
+    post {
+        always {
+            // Archive the file containing the output values as an artifact
+            archiveArtifacts artifacts: 'terraform_outputs.json', onlyIfSuccessful: true
+        }
+    }
     }
 }
