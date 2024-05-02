@@ -6,11 +6,17 @@ variable "vpc_cidr" {
 variable "vpc_tags" {
   description = "Tags for the VPC"
   type        = map(string)
+  default     = {
+    Name = "test-vpc"
+  }
 }
 
 variable "igw_tags" {
-  description = "Tags for the IGW"
+  description = "Tags for the Internet Gateway"
   type        = map(string)
+  default     = {
+    Name = "test-igw"
+  }
 }
 
 variable "environment" {
