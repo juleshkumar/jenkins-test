@@ -1,8 +1,4 @@
-#AWS Account Numbe
-variable "public_key_file" {
-  type        = string
-  description = "File path to the public key file"
-}
+#AWS Account Number
 
 variable "ami" {
   type        = string
