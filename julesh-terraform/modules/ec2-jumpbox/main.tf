@@ -82,7 +82,6 @@ resource "tls_private_key" "ssh_server" {
 
 resource "aws_key_pair" "main" {
   key_name   = var.ec2_key_name
-  public_key = var.public_key_file != null ? file(var.public_key_file) : tls_private_key.ssh_server.public_key_openssh
 }
 
 ##if you don't have apublic key use the below commands to generate key 
