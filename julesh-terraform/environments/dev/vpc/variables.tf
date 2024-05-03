@@ -35,28 +35,28 @@ variable "security_group" {
 }
 
 variable "public-count" {
-  type        = number
+  type        = string
   description = "vpc public subnet count group "
 }
 
 variable "private-count" {
-  type        = number
+  type        = string
   description = "vpc public subnet count group"
 }
 
 
 variable "nat-count" {
-  type        = number
+  type        = string
   description = "vpc security group "
 }
 
 variable "public-subnet_mask" {
-  type        = number
+  type        = string
   description = "Subnet mask value for CIDR calculation"
 }
 
 variable "private-subnet_mask" {
-  type        = number
+  type        = string
   description = "Subnet mask value for CIDR calculation"
 }
 
