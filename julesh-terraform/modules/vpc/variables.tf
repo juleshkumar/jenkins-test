@@ -52,11 +52,13 @@ variable "private-count" {
 variable "public-subnet_mask" {
   type        = number
   description = "Subnet mask value for CIDR calculation"
+  default     = 4
 }
 
 variable "private-subnet_mask" {
   type        = number
   description = "Subnet mask value for CIDR calculation"
+  default     = 4
 
 }
 
