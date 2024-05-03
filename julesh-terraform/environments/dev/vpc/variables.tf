@@ -37,16 +37,20 @@ variable "security_group" {
 variable "public-count" {
   type        = number
   description = "vpc public subnet count group "
+  default     = 2
 }
 
 variable "private-count" {
   type        = number
-  description = "vpc public subnet count group "
+  description = "vpc public subnet count group"
+  default     = 2
 }
+
 
 variable "nat-count" {
   type        = number
   description = "vpc security group "
+  default     = 2
 }
 
 variable "public-subnet_mask" {
