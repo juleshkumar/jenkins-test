@@ -1,5 +1,3 @@
-# vpc/variables.tf
-
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string
@@ -20,30 +18,24 @@ variable "environment" {
   description = "environment for vpc"
 }
 
-#variable "azs" {
-#  type        = string
-#  description = "availability zones"
-#}
-
 variable "security_group" {
   type        = string
-  description = "vpc security group "
+  description = "vpc security group"
 }
 
 variable "nat-count" {
-  type        = string
-  description = "vpc security group "
+  type        = number
+  description = "Number of NAT gateways"
 }
 
-
 variable "public-count" {
-  type        = string
-  description = "vpc public subnet count group "
+  type        = number
+  description = "Number of public subnets"
 }
 
 variable "private-count" {
-  type        = string
-  description = "vpc public subnet count group "
+  type        = number
+  description = "Number of private subnets"
 }
 
 variable "public-subnet_mask" {
@@ -55,4 +47,3 @@ variable "private-subnet_mask" {
   type        = string
   description = "Subnet mask value for CIDR calculation"
 }
-
