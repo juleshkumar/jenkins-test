@@ -34,7 +34,6 @@ pipeline {
         string(name: 'instance-type-on-demand', defaultValue: 'r5a.large', description: 'on demand instance type')
         string(name: 'instance-type-spot', defaultValue: 't3a.large', description: 'spot instance type')
         string(name: 'public_key_file', defaultValue: '/var/lib/jenkins/.ssh/id_rsa.pub', description: 'public key file')
-        string(name: 'ec2_key_name', defaultValue: 'jumpbox-key-ec2', description: 'ec2 key pair')
         string(name: 'ec2_instance_type', defaultValue: 't2.micro', description: 'instance type')
         string(name: 'eks_key_name', defaultValue: 'eks-key', description: 'eks_key_name')
     }
