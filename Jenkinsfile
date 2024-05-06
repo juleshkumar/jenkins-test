@@ -128,7 +128,6 @@ pipeline {
                         sh 'terraform init'
                         def tfPlanCmd = "terraform plan -out=ec2_jumpbox_tfplan " +
                                         "-var 'ami=${params.ami}' " +
-                                        "-var 'public_key_file=${params.public_key_file}' " +
                                         "-var 'ec2_key_name=${params.ec2_key_name}' " +
                                         "-var 'ec2_instance_type=${params.ec2_instance_type}' " +
                                         "-var 'js_user=${params.js_user}'"
@@ -144,7 +143,6 @@ pipeline {
                         sh "terraform ${params.action} -input=false ec2_jumpbox_tfplan"
                     } else if (params.action == 'destroy') {
                         sh "terraform ${params.action} --auto-approve -var 'ami=${params.ami}' " +
-                            "-var 'public_key_file=${params.public_key_file}' " +
                             "-var 'ec2_key_name=${params.ec2_key_name}' " +
                             "-var 'ec2_instance_type=${params.ec2_instance_type}' " +
                             "-var 'js_user=${params.js_user}'"
