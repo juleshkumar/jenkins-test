@@ -4,7 +4,7 @@ data "terraform_remote_state" "vpc_state" {
   config = {
     bucket     = ""
     key        = "backend/vpc"
-    region     = "us-east-1"
+    region     = "ap-south-1"
     role_arn   = ""
   }
 }
@@ -15,7 +15,7 @@ data "terraform_remote_state" "kms" {
   config = {
     bucket     = ""
     key        = "backend/kms"
-    region     = "us-east-1"
+    region     = "ap-south-1"
     role_arn   = ""
   }
 }
