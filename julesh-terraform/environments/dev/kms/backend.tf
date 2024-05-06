@@ -3,7 +3,6 @@ terraform {
     bucket     = ""
     key        = "backend/kms"
     region     = "us-east-1"
-    role_arn   = ""
   }
 }
 
