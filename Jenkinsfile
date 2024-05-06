@@ -206,7 +206,7 @@ pipeline {
         stage('Nodegorup creation') {
             steps {
                 script {
-                    dir('julesh-terraform/environments/dev/nodegroup') {
+                    dir('julesh-terraform/environments/dev/nodegroups') {
                         sh 'terraform init'
                         def tfPlanCmd = "terraform plan -out=ng_tfplan " +
                                         "-var 'cluster-name=${params['cluster-name']}' " +
