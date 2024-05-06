@@ -74,16 +74,7 @@ resource "aws_iam_role_policy_attachment" "js_user_subaccounts_policy_attachment
 }
 
 
-resource "tls_private_key" "ssh_server" {
 
-  algorithm = "RSA"
-  rsa_bits  = 2048
-}
-
-resource "aws_key_pair" "main" {
-  key_name   = var.ec2_key_name
-  public_key = var.public_key_file != null ? file(var.public_key_file) : tls_private_key.ssh_server.public_key_openssh
-}
 
 ##if you don't have apublic key use the below commands to generate key 
 #  - ssh-keygen -t rsa -b 2048 -C "your_email@example.com"
@@ -173,7 +164,7 @@ resource "aws_security_group" "securitygroup-jump" {
 resource "aws_instance" "master" {
   ami             = var.ami
   instance_type   = var.ec2_instance_type
-  key_name        = aws_key_pair.main.key_name
+  key_name        = var.ec2_key_name
   subnet_id       = data.terraform_remote_state.vpc_state.outputs.public_subnet_ids[0]
   user_data       = file("${path.module}/base-setup.sh")
   security_groups = ["${aws_security_group.securitygroup-jump.id}"]
@@ -192,10 +183,4 @@ resource "aws_iam_instance_profile" "js_instance_profile" {
   role = aws_iam_role.js-iam-role.name
 }
 
-
-
-resource "local_file" "ssh_key" {
-  filename = "${aws_key_pair.main.key_name}.pem"
-  content  = tls_private_key.ssh_server.private_key_pem
-}
 
