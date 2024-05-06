@@ -2,10 +2,9 @@ data "terraform_remote_state" "vpc_state" {
   backend = "s3"
 
   config = {
-    bucket     = ""
+    bucket     = "terrafrom-test-to-delete-bucket"
     key        = "backend/vpc"
     region     = "ap-south-1"
-    role_arn   = ""
   }
 }
 
@@ -13,10 +12,9 @@ data "terraform_remote_state" "eks" {
   backend = "s3"
 
   config = {
-    bucket     = ""
+    bucket     = "terrafrom-test-to-delete-bucket"
     key        = "backend/eks"
     region     = "ap-south-1"
-    role_arn   = ""
   }
 }
 
