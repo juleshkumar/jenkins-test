@@ -1,9 +1,8 @@
 terraform {
   backend "s3" {
-    bucket     = ""
+    bucket     = "terrafrom-test-to-delete-bucket"
     key        = "backend/ec"
-    region     = "us-east-1"
-    role_arn   = ""
+    region     = "ap-south-1"
   }
 }
 
