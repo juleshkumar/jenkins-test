@@ -148,15 +148,15 @@ pipeline {
                                         "-var 'database_user=${params.database_user}' " +
                                         "-var 'database_password=${params.database_password}'"
                         sh tfPlanCmd
-                        sh 'terraform show -no-color vpc_tfplan > vpc_tfplan.txt'
+                        sh 'terraform show -no-color rds_tfplan > rds_tfplan.txt'
                         
                         if (params.action == 'apply') {
                         if (!params.autoApprove) {
-                            def plan = readFile 'vpc_tfplan.txt'
+                            def plan = readFile 'rds_tfplan.txt'
                             input message: "Do you want to apply the plan?",
                                   parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                         }
-                        sh "terraform ${params.action} -input=false vpc_tfplan"
+                        sh "terraform ${params.action} -input=false rds_tfplan"
                     } else if (params.action == 'destroy') {
                         sh "terraform ${params.action} --auto-approve -var 'vrt_db_instance_identifier=${params.vrt_db_instance_identifier}' " +
                             "-var 'vrt_db_security_group=${params.vrt_db_security_group}' " +
