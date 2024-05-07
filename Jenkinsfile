@@ -54,6 +54,7 @@ pipeline {
         string(name: 'redis-node-type', defaultValue: 'cache.t3.small', description: 'redis-node-type')
         string(name: 'num-cache-nodes', defaultValue: '1', description: 'num-cache-nodes')
         string(name: 'parameter-group-family', defaultValue: 'redis6.x', description: 'parameter-group-family')
+        string(name: 'efs-security-group', defaultValue: 'efs-mount-target-sg', description: 'efs-security-group')
     }
 
     environment {
@@ -107,6 +108,34 @@ pipeline {
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                     }
+                    }
+                }
+            }
+        }
+        stage('EFS Creation') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/efs') {
+                        sh 'terraform init'
+                        def tfPlanCmd = "terraform plan -out=efs_tfplan " +
+                                        "-var 'cluster-name=${params['cluster-name']}' " +
+                                        "-var 'efs-security-group=${params['efs-security-group']}' "
+
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color efs_tfplan > efs_tfplan.txt'
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'efs_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false efs_tfplan"
+                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params['cluster-name']}' "+
+                            "-var 'efs-security-group=${params['efs-security-group']}' "
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+
                     }
                 }
             }
