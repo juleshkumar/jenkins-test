@@ -45,7 +45,7 @@ pipeline {
         string(name: 'engine_version', defaultValue: '12.12', description: 'rds engine_version')     
         string(name: 'vrt_db_instance_type', defaultValue: 'db.m6g.large', description: 'vrt_db_instance_type')
         string(name: 'vrt_database_name', defaultValue: 'decimal_database_technologies', description: 'vrt_database_name')
-        string(name: 'database_user ', defaultValue: 'psq_demo', description: 'database_user ')
+        string(name: 'database_user', defaultValue: 'psq_demo', description: 'database_user')
         string(name: 'database_password', defaultValue: '1qaz@WSX3edc$RFV', description: 'database_password')
     }
 
