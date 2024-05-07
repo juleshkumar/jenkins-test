@@ -179,7 +179,7 @@ pipeline {
             steps {
                 script {
                     dir('julesh-terraform/environments/dev/eks') {
-                        sh 'terraform init'params
+                        sh 'terraform init'
                         def tfPlanCmd = "terraform plan -out=eks_tfplan " +
                                         "-var 'cluster-name=${params['cluster-name']}' " +
                                         "-var 'max-workers-demand=${params['max-workers-demand']}' " +
