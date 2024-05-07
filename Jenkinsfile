@@ -37,6 +37,16 @@ pipeline {
         string(name: 'public_key_file', defaultValue: '/var/lib/jenkins/.ssh/id_rsa.pub', description: 'public key file')
         string(name: 'ec2_instance_type', defaultValue: 't2.micro', description: 'instance type')
         string(name: 'eks_key_name', defaultValue: 'eks-key', description: 'eks_key_name')
+        string(name: 'vrt_db_instance_identifier', defaultValue: 'decimal-db-tech', description: 'vrt_db_instance_identifier')
+        string(name: 'vrt_db_security_group', defaultValue: 'decimal-rds-security', description: 'vrt_db_security_group')
+        string(name: 'vrt__db_cidr_range', defaultValue: '10.0.0.0/16', description: 'vrt__db_cidr_range')
+        string(name: 'major_version', defaultValue: '12', description: 'major_version') 
+        string(name: 'vrt_db_allocated_storage', defaultValue: '20', description: 'vrt_db_allocated_storage') 
+        string(name: 'engine_version', defaultValue: '12.12', description: 'rds engine_version')     
+        string(name: 'vrt_db_instance_type', defaultValue: 'db.m6g.large', description: 'vrt_db_instance_type')
+        string(name: 'vrt_database_name', defaultValue: 'decimal_database_technologies', description: 'vrt_database_name')
+        string(name: 'database_user ', defaultValue: 'psq_demo', description: 'database_user ')
+        string(name: 'database_password', defaultValue: '1qaz@WSX3edc$RFV', description: 'database_password')
     }
 
     environment {
@@ -104,15 +114,13 @@ pipeline {
 
                         sh tfPlanCmd
                         sh 'terraform show -no-color kms_tfplan > kms_tfplan.txt'
-
                         if (params.action == 'apply') {
                         if (!params.autoApprove) {
                             def plan = readFile 'kms_tfplan.txt'
                             input message: "Do you want to apply the plan?",
                                   parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                         }
-                        sh "terraform ${params.action} -input=false kms_tfplan"
-                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} -input=false kms_tfplan.txt"
                         sh "terraform ${params.action} --auto-approve -var 'kms_key_name=${params.kms_key_name}' "
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
@@ -122,11 +130,56 @@ pipeline {
                 }
             }
         }
+        stage('RDS Creation') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/rds') {
+                        sh 'terraform init'
+                        
+                        def tfPlanCmd = "terraform plan -out=rds_tfplan " +
+                                        "-var 'vrt_db_instance_identifier=${params.vrt_db_instance_identifier}' " +
+                                        "-var 'vrt_db_security_group=${params.vrt_db_security_group}' " +
+                                        "-var 'vrt__db_cidr_range=${params.vrt__db_cidr_range}' " +
+                                        "-var 'major_version=${params.major_version}' " +
+                                        "-var 'vrt_db_allocated_storage=${params.vrt_db_allocated_storage}' " +
+                                        "-var 'engine_version=${params.engine_version}' " +
+                                        "-var 'vrt_db_instance_type=${params.vrt_db_instance_type}' " +
+                                        "-var 'vrt_database_name=${params.vrt_database_name}' " +
+                                        "-var 'database_user=${params.database_user}' " +
+                                        "-var 'database_password=${params.database_password}'"
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color vpc_tfplan > vpc_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'vpc_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false vpc_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var 'vrt_db_instance_identifier=${params.vrt_db_instance_identifier}' " +
+                            "-var 'vrt_db_security_group=${params.vrt_db_security_group}' " +
+                            "-var 'vrt__db_cidr_range=${params.vrt__db_cidr_range}' " +
+                            "-var 'major_version=${params.major_version}' " +
+                            "-var 'vrt_db_allocated_storage=${params.vrt_db_allocated_storage}' " +
+                            "-var 'engine_version=${params.engine_version}' " +
+                            "-var 'vrt_db_instance_type=${params.vrt_db_instance_type}' " +
+                            "-var 'vrt_database_name=${params.vrt_database_name}' " +
+                            "-var 'database_user=${params.database_user}' " +
+                            "-var 'database_password=${params.database_password}'"
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+                    }
+                }
+            }
+        }
         stage('eks creation') {
             steps {
                 script {
                     dir('julesh-terraform/environments/dev/eks') {
-                        sh 'terraform init'
+                        sh 'terraform init'params
                         def tfPlanCmd = "terraform plan -out=eks_tfplan " +
                                         "-var 'cluster-name=${params['cluster-name']}' " +
                                         "-var 'max-workers-demand=${params['max-workers-demand']}' " +
@@ -314,8 +367,6 @@ pipeline {
                 }
             }
         }
-            
-
 
     }
 }
