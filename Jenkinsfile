@@ -46,7 +46,14 @@ pipeline {
         string(name: 'vrt_db_instance_type', defaultValue: 'db.m6g.large', description: 'vrt_db_instance_type')
         string(name: 'vrt_database_name', defaultValue: 'decimal_database_technologies', description: 'vrt_database_name')
         string(name: 'database_user', defaultValue: 'psq_demo', description: 'database_user')
-        string(name: 'database_password', defaultValue: '1qaz@WSX3edc$RFV', description: 'database_password')
+        string(name: 'database_password', defaultValue: 'Qwerty#789', description: 'database_password')
+        string(name: 'replication-id', defaultValue: 'decimal-elasticache-replication', description: 'replication-id')
+        string(name: 'redis-cluster', defaultValue: 'elasticache-redis-cluster', description: 'redis-cluster')
+        string(name: 'redis-engine', defaultValue: 'redis', description: 'redis-engine')
+        string(name: 'redis-engine-version', defaultValue: '6', description: 'redis-engine-version') #########
+        string(name: 'redis-node-type', defaultValue: 'cache.t3.small', description: 'redis-node-type')
+        string(name: 'num-cache-nodes', defaultValue: '1', description: 'num-cache-nodes') ####
+        string(name: 'parameter-group-family', defaultValue: 'redis6.x', description: 'parameter-group-family')
     }
 
     environment {
@@ -126,6 +133,45 @@ pipeline {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                     }
 
+                    }
+                }
+            }
+        }
+        stage('Redis Creation') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/elasticache') {
+                        sh 'terraform init'
+                        
+                        def tfPlanCmd = "terraform plan -out=ec_tfplan " +
+                                        "-var 'replication-id=${params['replication-id']}' " +
+                                        "-var 'redis-cluster=${params['redis-cluster']}' " +
+                                        "-var 'redis-engine=${params['redis-engine']}' " +
+                                        "-var 'redis-engine-version=${params['redis-engine-version']}' " +
+                                        "-var 'redis-node-type=${params['redis-node-type']}' " +
+                                        "-var 'num-cache-nodes=${params['num-cache-nodes']}' " +
+                                        "-var 'parameter-group-family=${params['parameter-group-family']}' "
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color ec_tfplan > ec_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'ec_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false ec_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var '-var 'replication-id=${params['replication-id']}' " +
+                            "-var 'redis-cluster=${params['redis-cluster']}' " +
+                            "-var 'redis-engine=${params['redis-engine']}' " +
+                            "-var 'redis-engine-version=${params['redis-engine-version']}' " +
+                            "-var 'redis-node-type=${params['redis-node-type']}' " +
+                            "-var 'num-cache-nodes=${params['num-cache-nodes']}' " +
+                            "-var 'parameter-group-family=${params['parameter-group-family']}' "
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
                     }
                 }
             }
