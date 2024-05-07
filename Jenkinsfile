@@ -50,9 +50,9 @@ pipeline {
         string(name: 'replication-id', defaultValue: 'decimal-elasticache-replication', description: 'replication-id')
         string(name: 'redis-cluster', defaultValue: 'elasticache-redis-cluster', description: 'redis-cluster')
         string(name: 'redis-engine', defaultValue: 'redis', description: 'redis-engine')
-        string(name: 'redis-engine-version', defaultValue: '6', description: 'redis-engine-version') #########
+        string(name: 'redis-engine-version', defaultValue: '6', description: 'redis-engine-version') 
         string(name: 'redis-node-type', defaultValue: 'cache.t3.small', description: 'redis-node-type')
-        string(name: 'num-cache-nodes', defaultValue: '1', description: 'num-cache-nodes') ####
+        string(name: 'num-cache-nodes', defaultValue: '1', description: 'num-cache-nodes')
         string(name: 'parameter-group-family', defaultValue: 'redis6.x', description: 'parameter-group-family')
     }
 
@@ -140,6 +140,7 @@ pipeline {
         stage('Redis Creation') {
             steps {
                 script {
+                    def cachenodes = params['num-cache-nodes'].toInteger()
                     dir('julesh-terraform/environments/dev/elasticache') {
                         sh 'terraform init'
                         
@@ -149,7 +150,7 @@ pipeline {
                                         "-var 'redis-engine=${params['redis-engine']}' " +
                                         "-var 'redis-engine-version=${params['redis-engine-version']}' " +
                                         "-var 'redis-node-type=${params['redis-node-type']}' " +
-                                        "-var 'num-cache-nodes=${params['num-cache-nodes']}' " +
+                                        "-var 'num-cache-nodes=${cachenodes}' " +
                                         "-var 'parameter-group-family=${params['parameter-group-family']}' "
                         sh tfPlanCmd
                         sh 'terraform show -no-color ec_tfplan > ec_tfplan.txt'
