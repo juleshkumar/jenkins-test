@@ -50,11 +50,22 @@ pipeline {
         string(name: 'replication-id', defaultValue: 'decimal-elasticache-replication', description: 'replication-id')
         string(name: 'redis-cluster', defaultValue: 'elasticache-redis-cluster', description: 'redis-cluster')
         string(name: 'redis-engine', defaultValue: 'redis', description: 'redis-engine')
-        string(name: 'redis-engine-version', defaultValue: '6', description: 'redis-engine-version') 
+        string(name: 'redis-engine-version', defaultValue: '6.0', description: 'redis-engine-version') 
         string(name: 'redis-node-type', defaultValue: 'cache.t3.small', description: 'redis-node-type')
         string(name: 'num-cache-nodes', defaultValue: '1', description: 'num-cache-nodes')
         string(name: 'parameter-group-family', defaultValue: 'redis6.x', description: 'parameter-group-family')
         string(name: 'efs-security-group', defaultValue: 'efs-mount-target-sg', description: 'efs-security-group')
+        booleanParam(name: 'internal', defaultValue: 'false', description: 'LB')
+        string(name: 'load_balancer_type', defaultValue: 'application', description: 'LB')
+        string(name: 'load_balancer_name', defaultValue: 'decimal-load-balancer', description: 'LB')
+        string(name: 'lb-port', defaultValue: '80', description: 'lb-port')
+        string(name: 'protocol', defaultValue: 'HTTP', description: 'protocol for lb sg')
+        string(name: 'autoscaling-group-name', defaultValue: 'vrt-asg', description: 'ASG name')
+        string(name: 'target-group-name', defaultValue: 'tg-sg-lb', description: 'target group name')
+        string(name: 'lb_security_group', defaultValue: 'load-balancer-sg', description: 'load-balancer-sg')
+        string(name: 'from_ports', defaultValue: '443', description: 'lb port')
+        string(name: 'to_ports', defaultValue: '443', description: 'lb port')
+        string(name: 'security-group-cidr', defaultValue: '0.0.0.0/0', description: 'source cidr')
     }
 
     environment {
@@ -105,6 +116,65 @@ pipeline {
                             "-var 'private-subnet_mask=${privateSubnetMask}' " +
                             "-var 'environment=${params.environment}' " +
                             "-var 'security_group=${params.security_group}'"
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+                    }
+                }
+            }
+        }
+        stage('LB Creation') {
+            steps {
+                script {
+                    def lbport = params['lb-port'].toInteger()
+                    def fromport = params['from_ports'].toInteger()
+                    def toport = params['to_ports'].toInteger()
+                    
+                    dir('julesh-terraform/environments/dev/load_balancer') {
+                        sh 'terraform init'
+                        
+                        def tfPlanCmd = "terraform plan -out=lb_tfplan " +
+                                        "-var 'load_balancer_name=${params.load_balancer_name}' " +
+                                        "-var 'lb-port=${lbport}' " +
+                                        "-var 'from_ports=${fromport}' " +
+                                        "-var 'to_ports=${toport}' " +
+                                        "-var 'load_balancer_type=${params.load_balancer_type}' " +
+                                        "-var 'protocol=${params.protocol}' " +
+                                        "-var 'autoscaling-group-name=${params['autoscaling-group-name']}' " +
+                                        "-var 'target-group-name=${params['target-group-name']}' " +
+                                        "-var 'security-group-cidr=${params['security-group-cidr']}' " +
+                                        "-var 'lb_security_group=${params.lb_security_group}'"
+                        if (params.internal) {
+                            tfPlanCmd += " -var 'internal=true'"
+                        } else {
+                            tfPlanCmd += " -var 'internal=false'"
+                        }
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color lb_tfplan > lb_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'lb_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false lb_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var 'load_balancer_name=${params.load_balancer_name}' " +
+                            "-var 'lb-port=${lbport}' " +
+                            "-var 'from_ports=${fromport}' " +
+                            "-var 'to_ports=${toport}' " +
+                            "-var 'load_balancer_type=${params.load_balancer_type}' " +
+                            "-var 'protocol=${params.protocol}' " +
+                            "-var 'autoscaling-group-name=${params['autoscaling-group-name']}' " +
+                            "-var 'target-group-name=${params['target-group-name']}' " +
+                            "-var 'security-group-cidr=${params['security-group-cidr']}' " +
+                            "-var 'lb_security_group=${params.lb_security_group}'"
+                        if (params.internal) {
+                            tfPlanCmd += " -var 'internal=true'"
+                        } else {
+                            tfPlanCmd += " -var 'internal=false'"
+                        }
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                     }
