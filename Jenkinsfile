@@ -124,6 +124,65 @@ pipeline {
                 }
             }
         }
+        stage('LB Creation') {
+            steps {
+                script {
+                    def lbport = params['lb-port'].toInteger()
+                    def fromport = params['from_ports'].toInteger()
+                    def toport = params['to_ports'].toInteger()
+                    
+                    dir('julesh-terraform/environments/dev/load_balancer') {
+                        sh 'terraform init'
+                        
+                        def tfPlanCmd = "terraform plan -out=lb_tfplan " +
+                                        "-var 'load_balancer_name=${params.load_balancer_name}' " +
+                                        "-var 'lb-port=${lbport}' " +
+                                        "-var 'from_ports=${fromport}' " +
+                                        "-var 'to_ports=${toport}' " +
+                                        "-var 'load_balancer_type=${params.load_balancer_type}' " +
+                                        "-var 'protocol=${params.protocol}' " +
+                                        "-var 'autoscaling-group-name=${params['autoscaling-group-name']}' " +
+                                        "-var 'target-group-name=${params['target-group-name']}' " +
+                                        "-var 'security-group-cidr=${params['security-group-cidr']}' " +
+                                        "-var 'lb_security_group=${params.lb_security_group}'"
+                        if (params.internal) {
+                            tfPlanCmd += " -var 'internal=true'"
+                        } else {
+                            tfPlanCmd += " -var 'internal=false'"
+                        }
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color lb_tfplan > lb_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'lb_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false lb_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var 'load_balancer_name=${params.load_balancer_name}' " +
+                            "-var 'lb-port=${lbport}' " +
+                            "-var 'from_ports=${fromport}' " +
+                            "-var 'to_ports=${toport}' " +
+                            "-var 'load_balancer_type=${params.load_balancer_type}' " +
+                            "-var 'protocol=${params.protocol}' " +
+                            "-var 'autoscaling-group-name=${params['autoscaling-group-name']}' " +
+                            "-var 'target-group-name=${params['target-group-name']}' " +
+                            "-var 'security-group-cidr=${params['security-group-cidr']}' " +
+                            "-var 'lb_security_group=${params.lb_security_group}'"
+                        if (params.internal) {
+                            tfPlanCmd += " -var 'internal=true'"
+                        } else {
+                            tfPlanCmd += " -var 'internal=false'"
+                        }
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+                    }
+                }
+            }
+        }
         stage('EFS Creation') {
             steps {
                 script {
@@ -154,6 +213,277 @@ pipeline {
                     env.EFS_DNS_NAME = formattedEfsDnsName
 
                     }
+                }
+            }
+        }
+        stage('KMS Creation') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/kms') {
+                        sh 'terraform init'
+                        def tfPlanCmd = "terraform plan -out=kms_tfplan " +
+                                        "-var 'kms_key_name=${params.kms_key_name}'"
+
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color kms_tfplan > kms_tfplan.txt'
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'kms_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false kms_tfplan"
+                        sh "terraform ${params.action} --auto-approve -var 'kms_key_name=${params.kms_key_name}' "
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+
+                    }
+                }
+            }
+        }
+        stage('Redis Creation') {
+            steps {
+                script {
+                    def cachenodes = params['num-cache-nodes'].toInteger()
+                    dir('julesh-terraform/environments/dev/elasticache') {
+                        sh 'terraform init'
+                        
+                        def tfPlanCmd = "terraform plan -out=ec_tfplan " +
+                                        "-var 'replication-id=${params['replication-id']}' " +
+                                        "-var 'redis-cluster=${params['redis-cluster']}' " +
+                                        "-var 'redis-engine=${params['redis-engine']}' " +
+                                        "-var 'redis-engine-version=${params['redis-engine-version']}' " +
+                                        "-var 'redis-node-type=${params['redis-node-type']}' " +
+                                        "-var 'num-cache-nodes=${cachenodes}' " +
+                                        "-var 'parameter-group-family=${params['parameter-group-family']}' "
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color ec_tfplan > ec_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'ec_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false ec_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var '-var 'replication-id=${params['replication-id']}' " +
+                            "-var 'redis-cluster=${params['redis-cluster']}' " +
+                            "-var 'redis-engine=${params['redis-engine']}' " +
+                            "-var 'redis-engine-version=${params['redis-engine-version']}' " +
+                            "-var 'redis-node-type=${params['redis-node-type']}' " +
+                            "-var 'num-cache-nodes=${params['num-cache-nodes']}' " +
+                            "-var 'parameter-group-family=${params['parameter-group-family']}' "
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+                    }
+                }
+            }
+        }
+        stage('RDS Creation') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/rds') {
+                        sh 'terraform init'
+                        
+                        def tfPlanCmd = "terraform plan -out=rds_tfplan " +
+                                        "-var 'vrt_db_instance_identifier=${params.vrt_db_instance_identifier}' " +
+                                        "-var 'vrt_db_security_group=${params.vrt_db_security_group}' " +
+                                        "-var 'vrt__db_cidr_range=${params.vrt__db_cidr_range}' " +
+                                        "-var 'major_version=${params.major_version}' " +
+                                        "-var 'vrt_db_allocated_storage=${params.vrt_db_allocated_storage}' " +
+                                        "-var 'engine_version=${params.engine_version}' " +
+                                        "-var 'vrt_db_instance_type=${params.vrt_db_instance_type}' " +
+                                        "-var 'vrt_database_name=${params.vrt_database_name}' " +
+                                        "-var 'database_user=${params.database_user}' " +
+                                        "-var 'database_password=${params.database_password}'"
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color rds_tfplan > rds_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'rds_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false rds_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var 'vrt_db_instance_identifier=${params.vrt_db_instance_identifier}' " +
+                            "-var 'vrt_db_security_group=${params.vrt_db_security_group}' " +
+                            "-var 'vrt__db_cidr_range=${params.vrt__db_cidr_range}' " +
+                            "-var 'major_version=${params.major_version}' " +
+                            "-var 'vrt_db_allocated_storage=${params.vrt_db_allocated_storage}' " +
+                            "-var 'engine_version=${params.engine_version}' " +
+                            "-var 'vrt_db_instance_type=${params.vrt_db_instance_type}' " +
+                            "-var 'vrt_database_name=${params.vrt_database_name}' " +
+                            "-var 'database_user=${params.database_user}' " +
+                            "-var 'database_password=${params.database_password}'"
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+                    }
+                }
+            }
+        }
+        stage('eks creation') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/eks') {
+                        sh 'terraform init'
+                        def tfPlanCmd = "terraform plan -out=eks_tfplan " +
+                                        "-var 'cluster-name=${params['cluster-name']}' " +
+                                        "-var 'max-workers-demand=${params['max-workers-demand']}' " +
+                                        "-var 'max-workers-spot=${params['max-workers-spot']}' " +
+                                        "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
+                                        "-var 'instance_capacity_types_spot=${params['instance_capacity_types_spot']}' " +
+                                        "-var 'inst_disk_size=${params['inst_disk_size']}' " +
+                                        "-var 'inst_key_pair=${params['inst_key_pair']}' " +
+                                        "-var 'k8s_version=${params['k8s_version']}' " +
+                                        "-var 'num-workers-spot=${params['num-workers-spot']}' " +
+                                        "-var 'num-workers-demand=${params['num-workers-demand']}' " +
+                                        "-var 'instance-type-on-demand=${params['instance-type-on-demand']}' " +
+                                        "-var 'instance-type-spot=${params['instance-type-spot']}' " +
+                                        "-var 'public_key_file=${params['public_key_file']}' " +
+                                        "-var 'eks_key_name=${params['eks_key_name']}' "
+
+
+                        if (params.cloudwatch_logs) {
+                            tfPlanCmd += " -var 'cloudwatch_logs=true'"
+                        } else {
+                            tfPlanCmd += " -var 'cloudwatch_logs=false'"
+                        }
+
+                        if (params.cluster_autoscaler) {
+                            tfPlanCmd += " -var 'cluster-autoscaler=true'"
+                        } else {
+                            tfPlanCmd += " -var 'cluster-autoscaler=false'"
+                        }
+
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color eks_tfplan > eks_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'eks_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false eks_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params['cluster-name']}' " +
+                            "-var 'max-workers-demand=${params['max-workers-demand']}' " +
+                            "-var 'max-workers-spot=${params['max-workers-spot']}' " +
+                            "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
+                            "-var 'instance_capacity_types_spot=${params['instance_capacity_types_spot']}' " +
+                            "-var 'inst_disk_size=${params['inst_disk_size']}' " +
+                            "-var 'inst_key_pair=${params['inst_key_pair']}' " +
+                            "-var 'k8s_version=${params['k8s_version']}' " +
+                            "-var 'num-workers-spot=${params['num-workers-spot']}' " +
+                            "-var 'num-workers-demand=${params['num-workers-demand']}' " +
+                            "-var 'instance-type-on-demand=${params['instance-type-on-demand']}' " +
+                            "-var 'instance-type-spot=${params['instance-type-spot']}' " +
+                            "-var 'public_key_file=${params['public_key_file']}' " +
+                            "-var 'eks_key_name=${params['eks_key_name']}' "
+
+                        if (params.cloudwatch_logs) {
+                            tfPlanCmd += " -var 'cloudwatch_logs=true'"
+                        } else {
+                            tfPlanCmd += " -var 'cloudwatch_logs=false'"
+                        }
+
+                        if (params.cluster_autoscaler) {
+                            tfPlanCmd += " -var 'cluster-autoscaler=true'"
+                        } else {
+                            tfPlanCmd += " -var 'cluster-autoscaler=false'"
+                        }
+
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+
+
+                        }
+                }
+            }
+        }
+        stage('Nodegorup creation') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/nodegroups') {
+                        sh 'terraform init'
+                        def tfPlanCmd = "terraform plan -out=ng_tfplan " +
+                                        "-var 'cluster-name=${params['cluster-name']}' " +
+                                        "-var 'max-workers-demand=${params['max-workers-demand']}' " +
+                                        "-var 'max-workers-spot=${params['max-workers-spot']}' " +
+                                        "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
+                                        "-var 'instance_capacity_types_spot=${params['instance_capacity_types_spot']}' " +
+                                        "-var 'inst_disk_size=${params['inst_disk_size']}' " +
+                                        "-var 'inst_key_pair=${params['inst_key_pair']}' " +
+                                        "-var 'num-workers-spot=${params['num-workers-spot']}' " +
+                                        "-var 'num-workers-demand=${params['num-workers-demand']}' " +
+                                        "-var 'instance-type-on-demand=${params['instance-type-on-demand']}' " +
+                                        "-var 'instance-type-spot=${params['instance-type-spot']}' " +
+                                        "-var 'public_key_file=${params['public_key_file']}' " +
+                                        "-var 'eks_key_name=${params['eks_key_name']}' "
+
+                        if (params.cloudwatch_logs) {
+                            tfPlanCmd += " -var 'cloudwatch_logs=true'"
+                        } else {
+                            tfPlanCmd += " -var 'cloudwatch_logs=false'"
+                        }
+
+                        if (params.cluster_autoscaler) {
+                            tfPlanCmd += " -var 'cluster-autoscaler=true'"
+                        } else {
+                            tfPlanCmd += " -var 'cluster-autoscaler=false'"
+                        }
+
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color ng_tfplan > ng_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'ng_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false ng_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params['cluster-name']}' " +
+                            "-var 'cluster-name=${params['cluster-name']}' "
+                            "-var 'max-workers-demand=${params['max-workers-demand']}' " +
+                            "-var 'max-workers-spot=${params['max-workers-spot']}' " +
+                            "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
+                            "-var 'instance_capacity_types_spot=${params['instance_capacity_types_spot']}' " +
+                            "-var 'inst_disk_size=${params['inst_disk_size']}' " +
+                            "-var 'inst_key_pair=${params['inst_key_pair']}' " +
+                            "-var 'num-workers-spot=${params['num-workers-spot']}' " +
+                            "-var 'num-workers-demand=${params['num-workers-demand']}' " +
+                            "-var 'instance-type-on-demand=${params['instance-type-on-demand']}' " +
+                            "-var 'instance-type-spot=${params['instance-type-spot']}' " +
+                            "-var 'public_key_file=${params['public_key_file']}' " +
+                            "-var 'eks_key_name=${params['eks_key_name']}' "
+
+                        if (params.cloudwatch_logs) {
+                            tfPlanCmd += " -var 'cloudwatch_logs=true'"
+                        } else {
+                            tfPlanCmd += " -var 'cloudwatch_logs=false'"
+                        }
+
+                        if (params.cluster_autoscaler) {
+                            tfPlanCmd += " -var 'cluster-autoscaler=true'"
+                        } else {
+                            tfPlanCmd += " -var 'cluster-autoscaler=false'"
+                        }
+
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+
+
+                        }
                 }
             }
         }
@@ -196,7 +526,7 @@ pipeline {
         stage('Deploy in EC2') {
             steps {
                 script {
-                    dir('julesh-terraform/environments/dev/Ansible') {
+                    dir('julesh-terraform/environments/dev/ec2-jumpbox') {
                         def inventoryContent = "[ec2]\n${env.INSTANCE_PUBLIC_IP} ansible_user=ubuntu ansible_ssh_private_key_file=/var/lib/jenkins/keypairs/jenkins-test-server2-keypair.pem"
                         sh "echo '${inventoryContent}' > inventory.ini"
 
@@ -205,5 +535,5 @@ pipeline {
             }
         }
     }
-    }
-}    
+}
+}
