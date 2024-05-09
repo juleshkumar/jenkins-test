@@ -8,7 +8,9 @@
       remote_user: ubuntu
 
     - name: Install nfs-common
-      raw: apt-get install -y nfs-common
+      raw: |
+        apt-get update
+        apt-get install -y nfs-common
       remote_user: ubuntu
 
     - name: Install python3-pip
