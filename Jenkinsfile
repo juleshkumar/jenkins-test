@@ -247,7 +247,7 @@ pipeline {
         }
         stage('Redis Creation') {
             steps {
-                script {aws-secret-access-keyger()
+                script {
                     dir('julesh-terraform/environments/dev/elasticache') {
                         sh 'terraform init'
                         
