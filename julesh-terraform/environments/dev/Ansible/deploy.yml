@@ -13,10 +13,6 @@
         apt-get install -y nfs-common
       remote_user: ubuntu
 
-    - name: Install python3-pip
-      raw: apt-get install -y python3-pip
-      remote_user: ubuntu
-
     - name: Install awscli
       raw: snap install aws-cli --classic --channel=stable
       remote_user: ubuntu
