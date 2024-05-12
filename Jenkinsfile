@@ -20,7 +20,7 @@ pipeline {
         string(name: 'js_user', defaultValue: 'ec2-new-user', description: 'Jumpbox user')
         string(name: 'autoscaling-group-name', defaultValue: 'vrt-asg', description: 'ASG name')
         string(name: 'kms_key_name', defaultValue: 'decimal-kms-key', description: 'kms key name')
-        string(name: 'cluster_name', defaultValue: 'eks-decimal-test', description: 'eks cluster name')
+        string(name: 'cluster-name', defaultValue: 'eks-decimal-test', description: 'eks cluster name')
         string(name: 'max-workers-demand', defaultValue: '5', description: 'maximum no of worker nodes')
         string(name: 'max-workers-spot', defaultValue: '5', description: 'max-workers-spot')
         booleanParam(name: 'cloudwatch_logs', defaultValue: false, description: ' cloudwatch logs')
@@ -66,9 +66,6 @@ pipeline {
         string(name: 'from_ports', defaultValue: '443', description: 'lb port')
         string(name: 'to_ports', defaultValue: '443', description: 'lb port')
         string(name: 'security-group-cidr', defaultValue: '0.0.0.0/0', description: 'source cidr')
-        string(name: 'region', defaultValue: 'ap-south-1', description: 'Region')
-        string(name: 'output', defaultValue: 'text', description: 'Output format')
-        string(name: 'namespace', defaultValue: 'test', description: 'Namespace')
     }
 
     environment {
@@ -192,7 +189,7 @@ pipeline {
                     dir('julesh-terraform/environments/dev/efs') {
                         sh 'terraform init'
                         def tfPlanCmd = "terraform plan -out=efs_tfplan " +
-                                        "-var 'cluster-name=${params.cluster_name}' " +
+                                        "-var 'cluster-name=${params['cluster-name']}' " +
                                         "-var 'efs-security-group=${params['efs-security-group']}' "
 
                         sh tfPlanCmd
@@ -204,7 +201,7 @@ pipeline {
                                   parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                         }
                         sh "terraform ${params.action} -input=false efs_tfplan"
-                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params.cluster_name}' "+
+                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params['cluster-name']}' "+
                             "-var 'efs-security-group=${params['efs-security-group']}' "
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
@@ -248,8 +245,10 @@ pipeline {
         stage('Redis Creation') {
             steps {
                 script {
+                    def cachenodes = params['num-cache-nodes'].toInteger()
                     dir('julesh-terraform/environments/dev/elasticache') {
                         sh 'terraform init'
+                        
                         def tfPlanCmd = "terraform plan -out=ec_tfplan " +
                                         "-var 'replication-id=${params['replication-id']}' " +
                                         "-var 'redis-cluster=${params['redis-cluster']}' " +
@@ -324,10 +323,6 @@ pipeline {
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                     }
-                    def efsDnsName = sh(returnStdout: true, script: "terraform output -json rds_endpoint").trim()
-                    def formattedrdsendpoint = efsDnsName.replaceAll('"', '')
-
-                    env.rds_endpoint = formattedrdsendpoint
                     }
                 }
             }
@@ -338,7 +333,7 @@ pipeline {
                     dir('julesh-terraform/environments/dev/eks') {
                         sh 'terraform init'
                         def tfPlanCmd = "terraform plan -out=eks_tfplan " +
-                                        "-var 'cluster-name=${params.cluster_name}' " +
+                                        "-var 'cluster-name=${params['cluster-name']}' " +
                                         "-var 'max-workers-demand=${params['max-workers-demand']}' " +
                                         "-var 'max-workers-spot=${params['max-workers-spot']}' " +
                                         "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
@@ -377,7 +372,7 @@ pipeline {
                         }
                         sh "terraform ${params.action} -input=false eks_tfplan"
                     } else if (params.action == 'destroy') {
-                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params.cluster_name}' " +
+                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params['cluster-name']}' " +
                             "-var 'max-workers-demand=${params['max-workers-demand']}' " +
                             "-var 'max-workers-spot=${params['max-workers-spot']}' " +
                             "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
@@ -419,7 +414,7 @@ pipeline {
                     dir('julesh-terraform/environments/dev/nodegroups') {
                         sh 'terraform init'
                         def tfPlanCmd = "terraform plan -out=ng_tfplan " +
-                                        "-var 'cluster-name=${params.cluster_name}' " +
+                                        "-var 'cluster-name=${params['cluster-name']}' " +
                                         "-var 'max-workers-demand=${params['max-workers-demand']}' " +
                                         "-var 'max-workers-spot=${params['max-workers-spot']}' " +
                                         "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
@@ -456,7 +451,8 @@ pipeline {
                         }
                         sh "terraform ${params.action} -input=false ng_tfplan"
                     } else if (params.action == 'destroy') {
-                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params.cluster_name}' " +
+                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params['cluster-name']}' " +
+                            "-var 'cluster-name=${params['cluster-name']}' "
                             "-var 'max-workers-demand=${params['max-workers-demand']}' " +
                             "-var 'max-workers-spot=${params['max-workers-spot']}' " +
                             "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
@@ -539,5 +535,5 @@ pipeline {
                 }
             }
         }
-    }
+}
 }
