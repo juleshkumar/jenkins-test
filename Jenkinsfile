@@ -66,6 +66,9 @@ pipeline {
         string(name: 'from_ports', defaultValue: '443', description: 'lb port')
         string(name: 'to_ports', defaultValue: '443', description: 'lb port')
         string(name: 'security-group-cidr', defaultValue: '0.0.0.0/0', description: 'source cidr')
+        string(name: 'region', defaultValue: 'ap-south-1', description: 'Region')
+        string(name: 'output', defaultValue: 'text', description: 'Output format')
+        string(name: 'namespace', defaultValue: 'test', description: 'Namespace')
     }
 
     environment {
@@ -526,11 +529,11 @@ pipeline {
         stage('Dir creation') {
             steps {
                 script {
-                    dir('julesh-terraform/environments/dev/ec2-jumpbox') {
+                    dir('julesh-terraform/environments/dev/Ansible') {
                         def inventoryContent = "[ec2]\n${env.INSTANCE_PUBLIC_IP} ansible_user=ubuntu ansible_ssh_private_key_file=/var/lib/jenkins/keypairs/jenkins-test-server2-keypair.pem"
                         sh "echo '${inventoryContent}' > inventory.ini"
 
-                        sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'efs_dns_name=${env.EFS_DNS_NAME} aws_access_key_id=${env.AWS_ACCESS_KEY_ID} aws_secret_access_key=${env.AWS_SECRET_ACCESS_KEY} aws_region=${params.region} aws_output_format=${params.output} namespace_name=${params.namespace} region=${params.region} cluster_name=${params.cluster_name}'"
+                        sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'efs_dns_name=${env.EFS_DNS_NAME} aws_access_key_id=${env.AWS_ACCESS_KEY_ID} aws_secret_access_key=${env.AWS_SECRET_ACCESS_KEY} aws_region=${params.region} aws_output_format=${params.output} namespace_name=${params.namespace} region=${params.region} cluster_name=${params['cluster-name']}'"
                 }
                 }
             }
