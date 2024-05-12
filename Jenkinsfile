@@ -15,7 +15,7 @@ pipeline {
         string(name: 'environment', defaultValue: 'dev', description: 'Environment name')
         string(name: 'security_group', defaultValue: 'test-sg', description: 'Security group name')
         string(name: 'ami', defaultValue: 'ami-05e00961530ae1b55', description: 'AMI ID for EC2 instances')
-        string(name: 'ec2_key_name', defaultValue: 'jenkins-test-server2-keypair', description: 'EC2 key pair name')
+        string(name: 'ec2_key_name', defaultValue: 'test-keypair-uipl.pem', description: 'EC2 key pair name')
         string(name: 'ec2_instance_type', defaultValue: 't3a.medium', description: 'EC2 instance type')
         string(name: 'js_user', defaultValue: 'ec2-new-user', description: 'Jumpbox user')
         string(name: 'autoscaling-group-name', defaultValue: 'vrt-asg', description: 'ASG name')
