@@ -166,7 +166,6 @@ resource "aws_instance" "master" {
   instance_type   = var.ec2_instance_type
   key_name        = var.ec2_key_name
   subnet_id       = data.terraform_remote_state.vpc_state.outputs.public_subnet_ids[0]
-  user_data       = file("${path.module}/base-setup.sh")
   security_groups = ["${aws_security_group.securitygroup-jump.id}"]
   iam_instance_profile = aws_iam_instance_profile.js_instance_profile.name
   tags = {
