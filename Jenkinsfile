@@ -15,12 +15,12 @@ pipeline {
         string(name: 'environment', defaultValue: 'dev', description: 'Environment name')
         string(name: 'security_group', defaultValue: 'test-sg', description: 'Security group name')
         string(name: 'ami', defaultValue: 'ami-05e00961530ae1b55', description: 'AMI ID for EC2 instances')
-        string(name: 'ec2_key_name', defaultValue: 'test-keypair-uipl.pem', description: 'EC2 key pair name')
+        string(name: 'ec2_key_name', defaultValue: 'jenkins-test-server2-keypair', description: 'EC2 key pair name')
         string(name: 'ec2_instance_type', defaultValue: 't3a.medium', description: 'EC2 instance type')
         string(name: 'js_user', defaultValue: 'ec2-new-user', description: 'Jumpbox user')
         string(name: 'autoscaling-group-name', defaultValue: 'vrt-asg', description: 'ASG name')
         string(name: 'kms_key_name', defaultValue: 'decimal-kms-key', description: 'kms key name')
-        string(name: 'cluster-name', defaultValue: 'eks-decimal-test', description: 'eks cluster name')
+        string(name: 'cluster_name', defaultValue: 'eks-decimal-test', description: 'eks cluster name')
         string(name: 'max-workers-demand', defaultValue: '5', description: 'maximum no of worker nodes')
         string(name: 'max-workers-spot', defaultValue: '5', description: 'max-workers-spot')
         booleanParam(name: 'cloudwatch_logs', defaultValue: false, description: ' cloudwatch logs')
@@ -66,11 +66,14 @@ pipeline {
         string(name: 'from_ports', defaultValue: '443', description: 'lb port')
         string(name: 'to_ports', defaultValue: '443', description: 'lb port')
         string(name: 'security-group-cidr', defaultValue: '0.0.0.0/0', description: 'source cidr')
+        string(name: 'region', defaultValue: 'ap-south-1', description: 'Region')
+        string(name: 'output', defaultValue: 'text', description: 'Output format')
+        string(name: 'namespace', defaultValue: 'test', description: 'Namespace')
     }
 
     environment {
-        AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        AWS_ACCESS_KEY_ID     = credentials('access-key-uipl')
+        AWS_SECRET_ACCESS_KEY = credentials('secretkey-uipl')
         ANSIBLE_HOST_KEY_CHECKING = 'False'
     }
 
@@ -189,7 +192,7 @@ pipeline {
                     dir('julesh-terraform/environments/dev/efs') {
                         sh 'terraform init'
                         def tfPlanCmd = "terraform plan -out=efs_tfplan " +
-                                        "-var 'cluster-name=${params['cluster-name']}' " +
+                                        "-var 'cluster-name=${params.cluster_name}' " +
                                         "-var 'efs-security-group=${params['efs-security-group']}' "
 
                         sh tfPlanCmd
@@ -201,7 +204,7 @@ pipeline {
                                   parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                         }
                         sh "terraform ${params.action} -input=false efs_tfplan"
-                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params['cluster-name']}' "+
+                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params.cluster_name}' "+
                             "-var 'efs-security-group=${params['efs-security-group']}' "
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
@@ -244,8 +247,7 @@ pipeline {
         }
         stage('Redis Creation') {
             steps {
-                script {
-                    def cachenodes = params['num-cache-nodes'].toInteger()
+                script {aws-secret-access-keyger()
                     dir('julesh-terraform/environments/dev/elasticache') {
                         sh 'terraform init'
                         
@@ -323,6 +325,10 @@ pipeline {
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                     }
+                    def efsDnsName = sh(returnStdout: true, script: "terraform output -json rds_endpoint").trim()
+                    def formattedrdsendpoint = efsDnsName.replaceAll('"', '')
+
+                    env.rds_endpoint = formattedrdsendpoint
                     }
                 }
             }
@@ -333,7 +339,7 @@ pipeline {
                     dir('julesh-terraform/environments/dev/eks') {
                         sh 'terraform init'
                         def tfPlanCmd = "terraform plan -out=eks_tfplan " +
-                                        "-var 'cluster-name=${params['cluster-name']}' " +
+                                        "-var 'cluster-name=${params.cluster_name}' " +
                                         "-var 'max-workers-demand=${params['max-workers-demand']}' " +
                                         "-var 'max-workers-spot=${params['max-workers-spot']}' " +
                                         "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
@@ -372,7 +378,7 @@ pipeline {
                         }
                         sh "terraform ${params.action} -input=false eks_tfplan"
                     } else if (params.action == 'destroy') {
-                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params['cluster-name']}' " +
+                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params.cluster_name}' " +
                             "-var 'max-workers-demand=${params['max-workers-demand']}' " +
                             "-var 'max-workers-spot=${params['max-workers-spot']}' " +
                             "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
@@ -414,7 +420,7 @@ pipeline {
                     dir('julesh-terraform/environments/dev/nodegroups') {
                         sh 'terraform init'
                         def tfPlanCmd = "terraform plan -out=ng_tfplan " +
-                                        "-var 'cluster-name=${params['cluster-name']}' " +
+                                        "-var 'cluster-name=${params.cluster_name}' " +
                                         "-var 'max-workers-demand=${params['max-workers-demand']}' " +
                                         "-var 'max-workers-spot=${params['max-workers-spot']}' " +
                                         "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
@@ -451,8 +457,7 @@ pipeline {
                         }
                         sh "terraform ${params.action} -input=false ng_tfplan"
                     } else if (params.action == 'destroy') {
-                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params['cluster-name']}' " +
-                            "-var 'cluster-name=${params['cluster-name']}' "
+                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params.cluster_name}' " +
                             "-var 'max-workers-demand=${params['max-workers-demand']}' " +
                             "-var 'max-workers-spot=${params['max-workers-spot']}' " +
                             "-var 'instance_capacity_types_demand=${params['instance_capacity_types_demand']}' " +
@@ -523,17 +528,17 @@ pipeline {
                 }
             }
         }
-        stage('Deploy in EC2') {
+        stage('Dir creation') {
             steps {
                 script {
                     dir('julesh-terraform/environments/dev/ec2-jumpbox') {
                         def inventoryContent = "[ec2]\n${env.INSTANCE_PUBLIC_IP} ansible_user=ubuntu ansible_ssh_private_key_file=/var/lib/jenkins/keypairs/jenkins-test-server2-keypair.pem"
                         sh "echo '${inventoryContent}' > inventory.ini"
 
-                        sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'efs_dns_name=${env.EFS_DNS_NAME}'"
+                        sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'efs_dns_name=${env.EFS_DNS_NAME} aws_access_key_id=${env.AWS_ACCESS_KEY_ID} aws_secret_access_key=${env.AWS_SECRET_ACCESS_KEY} aws_region=${params.region} aws_output_format=${params.output} namespace_name=${params.namespace} region=${params.region} cluster_name=${params.cluster_name}'"
+                }
                 }
             }
         }
     }
-}
 }
