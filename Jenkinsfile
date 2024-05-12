@@ -250,7 +250,6 @@ pipeline {
                 script {
                     dir('julesh-terraform/environments/dev/elasticache') {
                         sh 'terraform init'
-                        
                         def tfPlanCmd = "terraform plan -out=ec_tfplan " +
                                         "-var 'replication-id=${params['replication-id']}' " +
                                         "-var 'redis-cluster=${params['redis-cluster']}' " +
