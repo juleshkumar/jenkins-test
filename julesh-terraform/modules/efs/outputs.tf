@@ -15,5 +15,5 @@ output "efs_mount_target_ids" {
 
 output "efs_mount_target_dns_names" {
   description = "The DNS names of the AWS EFS mount targets"
-  value       = aws_efs_mount_target.my_mount_target[*].dns_name
+  value       = aws_efs_mount_target.my_mount_target[1].dns_name
 }
