@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'EC2_IP', defaultValue: '13.200.57.187', description: 'EC2 IP Address')
+        string(name: 'EC2_IP', defaultValue: '13.234.213.27', description: 'EC2 IP Address')
         string(name: 'region', defaultValue: 'ap-south-1', description: 'Region')
         string(name: 'output', defaultValue: 'text', description: 'Output format')
         string(name: 'namespace', defaultValue: 'test', description: 'Namespace')
