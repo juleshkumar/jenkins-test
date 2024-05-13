@@ -7,6 +7,7 @@ pipeline {
         string(name: 'output', defaultValue: 'text', description: 'Output format')
         string(name: 'namespace', defaultValue: 'test', description: 'Namespace')
         string(name: 'EFS_DNS_NAME', defaultValue: 'fs-0d29fdb85068a625b.efs.ap-south-1.amazonaws.com', description: 'EFS DNS Name')
+        string(name: 'cluster_name', defaultValue: 'eks-decimal-test', description: 'clustername')
     }
 
     environment {
@@ -24,7 +25,7 @@ pipeline {
 
                     git branch: 'dev-4', url: 'https://github.com/juleshkumar/new-test.git'
                     
-                    sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'efs_dns_name=${params.EFS_DNS_NAME} aws_access_key_id=${env.AWS_ACCESS_KEY_ID} aws_secret_access_key=${env.AWS_SECRET_ACCESS_KEY} aws_region=${params.region} aws_output_format=${params.output} namespace_name=${params.namespace}'"
+                    sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'efs_dns_name=${params.EFS_DNS_NAME} aws_access_key_id=${env.AWS_ACCESS_KEY_ID} aws_secret_access_key=${env.AWS_SECRET_ACCESS_KEY} aws_region=${params.region} aws_output_format=${params.output} namespace_name=${params.namespace} region=${params.region}'"
                 }
             }
         }
