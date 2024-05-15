@@ -203,7 +203,7 @@ resource "aws_eks_node_group" "on_demand" {
   ]
 }
 
-resource "aws_eks_node_group" "on_demand" {
+resource "aws_eks_node_group" "on_demand_one" {
   cluster_name    = data.terraform_remote_state.eks.outputs.eks_cluster_id
   node_group_name = "${var.cluster-name}-demand"
   node_role_arn   = aws_iam_role.node.arn
