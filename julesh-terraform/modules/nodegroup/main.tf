@@ -157,7 +157,7 @@ resource "aws_security_group" "efs_mount_target_sg" {
 
 
 
-resource "aws_eks_node_group" "on_demand" {
+resource "aws_eks_node_group" "spot" {
   cluster_name    = data.terraform_remote_state.eks.outputs.eks_cluster_id
   node_group_name = "${var.cluster-name}-spot"
   node_role_arn   = aws_iam_role.node.arn
@@ -203,7 +203,7 @@ resource "aws_eks_node_group" "on_demand" {
   ]
 }
 
-resource "aws_eks_node_group" "on_demand_one" {
+resource "aws_eks_node_group" "on_demand" {
   cluster_name    = data.terraform_remote_state.eks.outputs.eks_cluster_id
   node_group_name = "${var.cluster-name}-demand"
   node_role_arn   = aws_iam_role.node.arn
@@ -251,6 +251,5 @@ resource "aws_eks_node_group" "on_demand_one" {
     aws_iam_role_policy_attachment.node-AmazonEC2ContainerRegistryReadOnly,
   ]
 }
-
 
 
