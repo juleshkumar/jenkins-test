@@ -92,6 +92,8 @@
         chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-master-0
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-master-1
         chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-master-1
+        mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-master-2
+        chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-master-2
         mkdir -p /home/ubuntu/efs/postgres
         chmod 0755 /home/ubuntu/efs/postgres
         mkdir -p /home/ubuntu/efs/postgres/postgres-0
@@ -122,6 +124,10 @@
         chmod 0777 /home/ubuntu/efs/kafka/kafka-2
         mkdir -p /home/ubuntu/efs/kafka/kafka-3
         chmod 0777 /home/ubuntu/efs/kafka/kafka-3
+        mkdir -p /home/ubuntu/efs/kafka/kafka-zookeeper-0
+        chmod 0777 /home/ubuntu/efs/kafka/kafka-zookeeper-0
+        mkdir -p /home/ubuntu/efs/kafka/kafka-zookeeper-1
+        chmod 0777 /home/ubuntu/efs/kafka/kafka-zookeeper-1
         mkdir -p /home/ubuntu/efs/logging-agent
         chmod 0755 /home/ubuntu/efs/logging-agent
         mkdir -p /home/ubuntu/efs/loggingagent/logging-agent-0
@@ -132,13 +138,13 @@
         chmod 0777 /home/ubuntu/efs/loggingagent/logging-agent-2
         mkdir -p /home/ubuntu/efs/logstash
         chmod 0755 /home/ubuntu/efs/logstash
-        mkdir -p /home/ubuntu/efs/kafka/logstash-0
-        chmod 0777 /home/ubuntu/efs/kafka/logstash-0
-        mkdir -p /home/ubuntu/efs/kafka/logstash-1
-        chmod 0777 /home/ubuntu/efs/kafka/logstash-1
-        mkdir -p /home/ubuntu/efs/kafka/logstash-2
-        chmod 0777 /home/ubuntu/efs/kafka/logstash-2
-        mkdir -p /home/ubuntu/efs/kafka/logstash-3
-        chmod 0777 /home/ubuntu/efs/kafka/logstash-3
+        mkdir -p /home/ubuntu/efs/logstash/logstash-0
+        chmod 0777 /home/ubuntu/efs/logstash/logstash-0
+        mkdir -p /home/ubuntu/efs/logstash/logstash-1
+        chmod 0777 /home/ubuntu/efs/logstash/logstash-1
+        mkdir -p /home/ubuntu/efs/logstash/logstash-2
+        chmod 0777 /home/ubuntu/efs/logstash/logstash-2
+        mkdir -p /home/ubuntu/efs/logstash/logstash-3
+        chmod 0777 /home/ubuntu/efs/logstash/logstash-3
         
       remote_user: ubuntu
