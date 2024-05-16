@@ -57,6 +57,7 @@
     - name: replace efs id
       raw: sed -i 's/fs-070a7c9b90cf53e16/{{ efs_id }}/g' /home/ubuntu/new-env/vrt-pvc/*
       remote_user: ubuntu
+      ignore_errors: yes
 
     - name: Create Kubernetes namespace
       raw: kubectl create namespace {{ namespace }}
