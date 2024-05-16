@@ -62,6 +62,10 @@
     - name: Create Kubernetes namespace
       raw: kubectl create namespace {{ namespace }}
       remote_user: ubuntu
+
+    - name: Create Kubernetes namespace
+      raw: rm -rf cluster-autoscaler-autodiscover.yaml /home/ubuntu/new-env/vrt-pvc
+      remote_user: ubuntu
     
     - name: storage class
       raw: kubectl apply -f /home/ubuntu/new-env/vrt-pvc/storage-sc.yaml
