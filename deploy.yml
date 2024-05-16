@@ -25,10 +25,6 @@
 
     - name: Update kubeconfig for EKS cluster
       raw: aws eks update-kubeconfig --name {{ cluster_name }} --region {{ region }}
-      remote_user: 
-      
-    - name: Update kubeconfig for EKS cluster
-      raw: kubectl create namespace 
       remote_user: ubuntu
 
     - name: Create directory
