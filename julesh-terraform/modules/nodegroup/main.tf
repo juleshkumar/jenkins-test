@@ -134,6 +134,14 @@ resource "aws_security_group" "efs_mount_target_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "vpc"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["10.0.0.0/16"] # Allow traffic from anywhere (adjust as needed)
+  }
+
   // Add ingress rule for HTTPS (port 443)
   ingress {
     from_port   = 443
