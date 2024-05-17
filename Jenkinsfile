@@ -1,12 +1,13 @@
+
 pipeline {
     agent any
 
     parameters {
-        string(name: 'EC2_IP', defaultValue: '13.127.122.206', description: 'EC2 IP Address')
+        string(name: 'EC2_IP', defaultValue: '13.201.201.205', description: 'EC2 IP Address')
         string(name: 'region', defaultValue: 'ap-south-1', description: 'Region')
         string(name: 'output', defaultValue: 'text', description: 'Output format')
         string(name: 'namespace', defaultValue: 'vrt', description: 'Namespace')
-        string(name: 'EFS_DNS_NAME', defaultValue: 'fs-05b4b96da77246046', description: 'EFS DNS Name')
+        string(name: 'EFS_DNS_NAME', defaultValue: 'fs-06ebec8a15b78d14a', description: 'EFS DNS Name')
         string(name: 'cluster_name', defaultValue: 'eks-decimal-test', description: 'clustername')
         string(name: 'consul_version', defaultValue: '10.14.3', description: 'version')
         string(name: 'elasticsearch_version', defaultValue: '19.13.10', description: 'version')
@@ -58,3 +59,4 @@ pipeline {
 
     }
 }
+
