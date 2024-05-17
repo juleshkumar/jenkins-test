@@ -1,3 +1,4 @@
+
 - name: Tools deployment
   hosts: ec2
   become: yes
@@ -45,7 +46,7 @@
         unzip new-env-2.zip
       remote_user: ubuntu
 
-    - name: s3 copy 4
+    - name: s3 copy 3
       raw: |
         aws s3 cp s3://assesment-test-to-delete-yaml/logging-agent.yml /home/ubuntu
       remote_user: ubuntu
