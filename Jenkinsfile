@@ -1,5 +1,6 @@
 
 
+
 pipeline {
     agent any
 
@@ -330,6 +331,42 @@ pipeline {
                 }
             }
         }
+        stage('ec2-jumbox creation') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/ec2-jumpbox') {
+                        sh 'terraform init'
+                        def tfPlanCmd = "terraform plan -out=ec2_jumpbox_tfplan " +
+                                        "-var 'ami=${params.ami}' " +
+                                        "-var 'ec2_key_name=${params.ec2_key_name}' " +
+                                        "-var 'ec2_instance_type=${params.ec2_instance_type}' " +
+                                        "-var 'js_user=${params.js_user}'"
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color ec2_jumpbox_tfplan > ec2_jumpbox_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'ec2_jumpbox_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false ec2_jumpbox_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var 'ami=${params.ami}' " +
+                            "-var 'ec2_key_name=${params.ec2_key_name}' " +
+                            "-var 'ec2_instance_type=${params.ec2_instance_type}' " +
+                            "-var 'js_user=${params.js_user}'"
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+
+                    def instancePublicIp = sh(returnStdout: true, script: "terraform output public_ip").trim()
+
+                    env.INSTANCE_PUBLIC_IP = instancePublicIp
+                    }
+                }
+            }
+        }
         stage('eks creation') {
             steps {
                 script {
@@ -490,42 +527,7 @@ pipeline {
                 }
             }
         }
-        stage('ec2-jumbox creation') {
-            steps {
-                script {
-                    dir('julesh-terraform/environments/dev/ec2-jumpbox') {
-                        sh 'terraform init'
-                        def tfPlanCmd = "terraform plan -out=ec2_jumpbox_tfplan " +
-                                        "-var 'ami=${params.ami}' " +
-                                        "-var 'ec2_key_name=${params.ec2_key_name}' " +
-                                        "-var 'ec2_instance_type=${params.ec2_instance_type}' " +
-                                        "-var 'js_user=${params.js_user}'"
-                        sh tfPlanCmd
-                        sh 'terraform show -no-color ec2_jumpbox_tfplan > ec2_jumpbox_tfplan.txt'
-                        
-                        if (params.action == 'apply') {
-                        if (!params.autoApprove) {
-                            def plan = readFile 'ec2_jumpbox_tfplan.txt'
-                            input message: "Do you want to apply the plan?",
-                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
-                        }
-                        sh "terraform ${params.action} -input=false ec2_jumpbox_tfplan"
-                    } else if (params.action == 'destroy') {
-                        sh "terraform ${params.action} --auto-approve -var 'ami=${params.ami}' " +
-                            "-var 'ec2_key_name=${params.ec2_key_name}' " +
-                            "-var 'ec2_instance_type=${params.ec2_instance_type}' " +
-                            "-var 'js_user=${params.js_user}'"
-                    } else {
-                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
-                    }
-
-                    def instancePublicIp = sh(returnStdout: true, script: "terraform output public_ip").trim()
-
-                    env.INSTANCE_PUBLIC_IP = instancePublicIp
-                    }
-                }
-            }
-        }
+        
         stage('Dir creation') {
             steps {
                 script {
