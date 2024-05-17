@@ -168,9 +168,11 @@ resource "aws_eks_node_group" "spot" {
 
 
   labels = {
-    vrt-kafka     = "true",
-    vrt-elk       = "true",
-    vrt-zookeeper = "true",
+    vrt-cug-kafka     = "true",
+    vrt-elk           = "true",
+    vrt-cug-consul    = "true",
+    vrt-cug-logstash  = "true",
+    vrt-cug-nginx     = "true",
   }
 
   taint {
@@ -219,11 +221,6 @@ resource "aws_eks_node_group" "on_demand" {
     vrt-monitoring = "true",
   }
 
-  taint {
-    key    = "key"
-    value  = "persistTool"
-    effect = "NO_SCHEDULE"
-  }
 
   scaling_config {
     desired_size = var.num-workers-demand
