@@ -532,7 +532,7 @@ pipeline {
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                     }
-                    def redisendpoint = sh(returnStdout: true, script: "terraform output -json endpoint").trim()
+                    def redisendpoint = sh(returnStdout: true, script: "terraform output -json redis_cluster_endpoint").trim()
                     def fromatedendpoint = redisendpoint.replaceAll('"', '')
 
                     env.redis_endpoint = fromatedendpoint
