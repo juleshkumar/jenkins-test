@@ -69,7 +69,12 @@ pipeline {
         string(name: 'security-group-cidr', defaultValue: '0.0.0.0/0', description: 'source cidr')
         string(name: 'region', defaultValue: 'ap-south-1', description: 'Region')
         string(name: 'output', defaultValue: 'text', description: 'Output format')
-        string(name: 'namespace', defaultValue: 'test', description: 'Namespace')
+        string(name: 'namespace', defaultValue: 'vrt', description: 'Namespace')
+        string(name: 'consul_version', defaultValue: '10.14.3', description: 'version')
+        string(name: 'elasticsearch_version', defaultValue: '19.13.10', description: 'version')
+        string(name: 'nginx_version', defaultValue: '9.2.22', description: 'version')
+        string(name: 'kafka_version', defaultValue: '18.0.3', description: 'version')
+        string(name: 'logstash_version', defaultValue: '5.1.13', description: 'version')
     }
 
     environment {
@@ -212,9 +217,12 @@ pipeline {
                     }
 
                     def efsDnsName = sh(returnStdout: true, script: "terraform output -json efs_mount_target_dns_names").trim()
+                    def efsid = sh(returnStdout: true, script: "terraform output efs_file_system_id").trim()
                     def formattedEfsDnsName = efsDnsName.replaceAll('"', '')
+                    def fromatedefsid = efsid.replaceAll('"', '')
 
                     env.EFS_DNS_NAME = formattedEfsDnsName
+                    env.EFS_ID = fromatedefsid
 
                     }
                 }
@@ -246,46 +254,7 @@ pipeline {
                 }
             }
         }
-        stage('Redis Creation') {
-            steps {
-                script {
-                    def cachenodes = params['num-cache-nodes'].toInteger()
-                    dir('julesh-terraform/environments/dev/elasticache') {
-                        sh 'terraform init'
-                        
-                        def tfPlanCmd = "terraform plan -out=ec_tfplan " +
-                                        "-var 'replication-id=${params['replication-id']}' " +
-                                        "-var 'redis-cluster=${params['redis-cluster']}' " +
-                                        "-var 'redis-engine=${params['redis-engine']}' " +
-                                        "-var 'redis-engine-version=${params['redis-engine-version']}' " +
-                                        "-var 'redis-node-type=${params['redis-node-type']}' " +
-                                        "-var 'num-cache-nodes=${cachenodes}' " +
-                                        "-var 'parameter-group-family=${params['parameter-group-family']}' "
-                        sh tfPlanCmd
-                        sh 'terraform show -no-color ec_tfplan > ec_tfplan.txt'
-                        
-                        if (params.action == 'apply') {
-                        if (!params.autoApprove) {
-                            def plan = readFile 'ec_tfplan.txt'
-                            input message: "Do you want to apply the plan?",
-                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
-                        }
-                        sh "terraform ${params.action} -input=false ec_tfplan"
-                    } else if (params.action == 'destroy') {
-                        sh "terraform ${params.action} --auto-approve -var '-var 'replication-id=${params['replication-id']}' " +
-                            "-var 'redis-cluster=${params['redis-cluster']}' " +
-                            "-var 'redis-engine=${params['redis-engine']}' " +
-                            "-var 'redis-engine-version=${params['redis-engine-version']}' " +
-                            "-var 'redis-node-type=${params['redis-node-type']}' " +
-                            "-var 'num-cache-nodes=${params['num-cache-nodes']}' " +
-                            "-var 'parameter-group-family=${params['parameter-group-family']}' "
-                    } else {
-                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
-                    }
-                    }
-                }
-            }
-        }
+        
         stage('RDS Creation') {
             steps {
                 script {
@@ -527,8 +496,52 @@ pipeline {
                 }
             }
         }
+        stage('Redis Creation') {
+            steps {
+                script {
+                    def cachenodes = params['num-cache-nodes'].toInteger()
+                    dir('julesh-terraform/environments/dev/elasticache') {
+                        sh 'terraform init'
+                        
+                        def tfPlanCmd = "terraform plan -out=ec_tfplan " +
+                                        "-var 'replication-id=${params['replication-id']}' " +
+                                        "-var 'redis-cluster=${params['redis-cluster']}' " +
+                                        "-var 'redis-engine=${params['redis-engine']}' " +
+                                        "-var 'redis-engine-version=${params['redis-engine-version']}' " +
+                                        "-var 'redis-node-type=${params['redis-node-type']}' " +
+                                        "-var 'num-cache-nodes=${cachenodes}' " +
+                                        "-var 'parameter-group-family=${params['parameter-group-family']}' "
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color ec_tfplan > ec_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'ec_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false ec_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var '-var 'replication-id=${params['replication-id']}' " +
+                            "-var 'redis-cluster=${params['redis-cluster']}' " +
+                            "-var 'redis-engine=${params['redis-engine']}' " +
+                            "-var 'redis-engine-version=${params['redis-engine-version']}' " +
+                            "-var 'redis-node-type=${params['redis-node-type']}' " +
+                            "-var 'num-cache-nodes=${params['num-cache-nodes']}' " +
+                            "-var 'parameter-group-family=${params['parameter-group-family']}' "
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
+                    def redisendpoint = sh(returnStdout: true, script: "terraform output -json endpoint").trim()
+                    def fromatedendpoint = redisendpoint.replaceAll('"', '')
+
+                    env.redis_endpoint = fromatedendpoint
+                    }
+                }
+            }
+        }
         
-        stage('Dir creation') {
+        stage('Ansbile dir creation') {
             steps {
                 script {
                     dir('julesh-terraform/environments/dev/Ansible') {
@@ -539,5 +552,33 @@ pipeline {
             }
         }
 }
+        stage('Tools Deploy') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/Tools') {
+
+                        def inventoryContent = "[ec2]\n${env.INSTANCE_PUBLIC_IP} ansible_user=ubuntu ansible_ssh_private_key_file=/var/lib/jenkins/keypairs/jenkins-test-server2-keypair.pem"
+                        sh "echo '${inventoryContent}' > inventory.ini"
+
+                    
+                        sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'efs_id=${env.EFS_ID} aws_access_key_id=${env.AWS_ACCESS_KEY_ID} aws_secret_access_key=${env.AWS_SECRET_ACCESS_KEY} aws_region=${params.region} aws_output_format=${params.output} namespace=${params.namespace} region=${params.region} cluster_name=${params['cluster-name']} consul_version=${params.consul_version} elasticsearch_version=${params.elasticsearch_version} kafka_version=${params.kafka_version} nginx_ic_version=${params.nginx_version} logstash_version=${params.logstash_version}'"
+                    }
+                }
+            }
+        }
+        stage('Apps Deploy') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/Apps') {
+
+                        def inventoryContent = "[ec2]\n${env.INSTANCE_PUBLIC_IP} ansible_user=ubuntu ansible_ssh_private_key_file=/var/lib/jenkins/keypairs/jenkins-test-server2-keypair.pem"
+                        sh "echo '${inventoryContent}' > inventory.ini"
+
+                    
+                        sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'redis_host=${env.redis_endpoint} aws_access_key_id=${env.AWS_ACCESS_KEY_ID} aws_secret_access_key=${env.AWS_SECRET_ACCESS_KEY} aws_region=${params.region} aws_output_format=${params.output} namespace=${params.namespace}'"
+                    }
+                }
+            }
+        }
     }
 }
