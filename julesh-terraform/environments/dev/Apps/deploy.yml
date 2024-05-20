@@ -1,0 +1,32 @@
+- name: Apps deployment
+  hosts: ec2
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Set AWS access key ID
+      raw: aws configure set aws_access_key_id "{{ aws_access_key_id }}"
+      when: aws_access_key_id is defined
+      remote_user: ubuntu
+
+    - name: Set AWS secret access key
+      raw: aws configure set aws_secret_access_key "{{ aws_secret_access_key }}"
+      when: aws_secret_access_key is defined
+      remote_user: ubuntu
+
+    - name: Set AWS region
+      raw: aws configure set region "{{ aws_region }}"
+      when: aws_region is defined
+      remote_user: ubuntu
+
+    - name: Set AWS output format
+      raw: aws configure set output "{{ aws_output_format }}"
+      when: aws_output_format is defined
+      remote_user: ubuntu
+   
+    - name: kubectl create namespace
+      raw: sed -i 's/redis-host/{{ redis_host }}/g' /home/ubuntu/new-env-2/*
+      remote_user: ubuntu
+
+    - name: kubectl create namespace
+      raw: kubectl apply -f /home/ubuntu/new-env-2/. -n {{ namespace }}
+      remote_user: ubuntu

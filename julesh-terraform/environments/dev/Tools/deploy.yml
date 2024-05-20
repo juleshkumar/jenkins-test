@@ -1,0 +1,102 @@
+
+- name: Tools deployment
+  hosts: ec2
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Set AWS access key ID
+      raw: aws configure set aws_access_key_id "{{ aws_access_key_id }}"
+      when: aws_access_key_id is defined
+      remote_user: ubuntu
+
+    - name: Set AWS secret access key
+      raw: aws configure set aws_secret_access_key "{{ aws_secret_access_key }}"
+      when: aws_secret_access_key is defined
+      remote_user: ubuntu
+
+    - name: Set AWS region
+      raw: aws configure set region "{{ aws_region }}"
+      when: aws_region is defined
+      remote_user: ubuntu
+
+    - name: Set AWS output format
+      raw: aws configure set output "{{ aws_output_format }}"
+      when: aws_output_format is defined
+      remote_user: ubuntu
+
+    - name: Update kubeconfig for EKS cluster
+      raw: aws eks update-kubeconfig --name {{ cluster_name }} --region {{ region }}
+      remote_user: ubuntu
+
+    - name: s3 copy 1
+      raw: |
+        aws s3 cp s3://assesment-test-to-delete-yaml/consul-helm.zip /home/ubuntu
+        unzip consul-helm.zip
+      remote_user: ubuntu
+
+    - name: s3 copy 2
+      raw: |
+        aws s3 cp s3://assesment-test-to-delete-yaml/new-env.zip /home/ubuntu
+        unzip new-env.zip
+      remote_user: ubuntu
+
+    - name: s3 copy 3
+      raw: |
+        aws s3 cp s3://assesment-test-to-delete-yaml/new-env-2.zip /home/ubuntu
+        unzip new-env-2.zip
+      remote_user: ubuntu
+
+    - name: s3 copy 3
+      raw: |
+        aws s3 cp s3://assesment-test-to-delete-yaml/logging-agent.yml /home/ubuntu
+      remote_user: ubuntu
+
+    - name: s3 copy 5
+      raw: aws s3 cp s3://assesment-test-to-delete-yaml/consul-values.yml /home/ubuntu
+      remote_user: ubuntu
+
+    - name: replace efs id
+      raw: sed -i 's/fs-070a7c9b90cf53e16/{{ efs_id }}/g' /home/ubuntu/new-env/vrt-pvc/*
+      remote_user: ubuntu
+      ignore_errors: yes
+
+    - name: Create Kubernetes namespace
+      raw: kubectl create namespace {{ namespace }}
+      remote_user: ubuntu
+
+    - name: Create Kubernetes namespace
+      raw: rm -rf /home/ubuntu/new-env/vrt-pvc/cluster-autoscaler-autodiscover.yaml
+      remote_user: ubuntu
+    
+    - name: storage class
+      raw: kubectl apply -f /home/ubuntu/new-env/vrt-pvc/storage-sc.yaml
+      remote_user: ubuntu
+
+    - name: all pvc apply
+      raw: kubectl apply -f /home/ubuntu/new-env/vrt-pvc/. -n {{ namespace }}
+      remote_user: ubuntu
+
+    - name: bitnami repo
+      raw: helm repo add bitnami https://charts.bitnami.com/bitnami
+      remote_user: ubuntu
+
+    - name: consul yaml deployment
+      raw: helm upgrade --install consul -f /home/ubuntu/new-env/helm/consul-discovery-vrt.yaml bitnami/consul -n {{ namespace }} --version {{ consul_version }}
+      remote_user: ubuntu
+
+    - name: elasticsearch yaml deployment
+      raw: helm upgrade --install elasticsearch -f /home/ubuntu/new-env/helm/elasticsearch-vrt-cug.yml bitnami/elasticsearch -n {{ namespace }} --version {{ elasticsearch_version }}
+      remote_user: ubuntu
+
+
+    - name: kafka yaml deployment
+      raw: helm upgrade --install kafka -f /home/ubuntu/new-env/helm/kafka-zookeeper-vrt.yaml bitnami/kafka -n {{ namespace }} --version {{ kafka_version }}
+      remote_user: ubuntu
+
+    - name: nginx-ingress-controller yaml deployment
+      raw: helm upgrade --install nginx -f /home/ubuntu/new-env/helm/nginx-ingress-controller.yml bitnami/nginx-ingress-controller -n {{ namespace }} --version {{ nginx_ic_version }}
+      remote_user: ubuntu
+
+    - name: logstash yaml deployment
+      raw: helm upgrade --install logstash -f /home/ubuntu/new-env/helm/logstash-vrt-cug.yml bitnami/logstash -n {{ namespace }} --version {{ logstash_version }}
+      remote_user: ubuntu
