@@ -17,12 +17,12 @@ output "elasticache_cluster_id" {
 
 output "redis_cluster_endpoint" {
   description = "The endpoint of the Redis cluster"
-  value       = module.aws_elasticache_replication_group.redis_cluster_endpoint
+  value       = module.elasticache.aws_elasticache_replication_group.redis_cluster_endpoint
 }
 
 output "redis_cluster_configuration_endpoint" {
   description = "The configuration endpoint of the Redis cluster"
-  value       = module.aws_elasticache_replication_group.redis_cluster_configuration_endpoint
+  value       = module.elasticache.aws_elasticache_replication_group.redis_cluster_configuration_endpoint
 }
 
 
