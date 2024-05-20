@@ -14,6 +14,10 @@ output "elasticache_cluster_id" {
   value = aws_elasticache_cluster.redis.id
 }
 
+output "endpoint" {
+  value = "${aws_elasticache_replication_group.erg.primary_endpoint_address}"
+}
+
 
 
 
