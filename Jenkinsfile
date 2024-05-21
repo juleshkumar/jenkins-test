@@ -13,9 +13,8 @@ pipeline {
         stage('VPC Creation') {
             steps {
                 script {
-                    
-                    git branch: 'dev-5', url: 'https://github.com/juleshkumar/jenkins-test.git'
                     dir('addon') {
+                    git branch: 'dev-5', url: 'https://github.com/juleshkumar/jenkins-test.git'
                         sh 'terraform init'
                         
                         def tfPlanCmd = "terraform plan -out=as_tfplan " +
