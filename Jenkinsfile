@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     parameters {
+        choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
         string(name: 'cluster_name', defaultValue: 'eks-decimal-test', description: 'clustername')
     }
     environment {
