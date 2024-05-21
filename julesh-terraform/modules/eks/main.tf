@@ -71,11 +71,40 @@ data "tls_certificate" "example" {
   url = aws_eks_cluster.eks.identity[0].oidc[0].issuer
 }
 
+
+
 resource "aws_iam_openid_connect_provider" "example" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = [data.tls_certificate.example.certificates[0].sha1_fingerprint]
   url             = data.tls_certificate.example.url
 }
+
+resource "aws_security_group" "eks_allow_vpc_cidr" {
+  name        = "${var.cluster-name}-allow-vpc-cidr"
+  description = "Allow traffic from VPC CIDR"
+  vpc_id      = data.terraform_remote_state.vpc_state.outputs.vpc_id
+
+  ingress {
+    description = "Allow all inbound traffic from VPC CIDR"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [data.terraform_remote_state.vpc_state.outputs.vpc_cidr_block]
+  }
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    "Name" = "${var.cluster-name}-allow-vpc-cidr"
+  }
+}
+
 
 
 resource "aws_eks_cluster" "eks" {
@@ -93,8 +122,9 @@ resource "aws_eks_cluster" "eks" {
 
   vpc_config {
     subnet_ids         = data.terraform_remote_state.vpc_state.outputs.private_subnet_ids
-    endpoint_public_access = true
+    endpoint_public_access = false
     endpoint_private_access = true
+    security_group_ids = [aws_security_group.eks_allow_vpc_cidr.id]
   }
 
   depends_on = [
