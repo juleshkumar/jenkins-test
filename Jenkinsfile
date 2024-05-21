@@ -1,6 +1,3 @@
-
-
-
 pipeline {
     agent any
 
@@ -536,6 +533,33 @@ pipeline {
                     def fromatedendpoint = redisendpoint.replaceAll('"', '')
 
                     env.redis_endpoint = fromatedendpoint
+                    }
+                }
+            }
+        }
+        stage('EKS Addon') {
+            steps {
+                script {
+                    dir('julesh-terraform/environments/dev/addon') {
+                        sh 'terraform init'
+                        
+                        def tfPlanCmd = "terraform plan -out=as_tfplan " +
+                                        "-var 'cluster-name=${params['cluster-name']}'"
+                        sh tfPlanCmd
+                        sh 'terraform show -no-color as_tfplan > as_tfplan.txt'
+                        
+                        if (params.action == 'apply') {
+                        if (!params.autoApprove) {
+                            def plan = readFile 'as_tfplan.txt'
+                            input message: "Do you want to apply the plan?",
+                                  parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                        }
+                        sh "terraform ${params.action} -input=false as_tfplan"
+                    } else if (params.action == 'destroy') {
+                        sh "terraform ${params.action} --auto-approve -var 'cluster-name=${params['cluster-name']}' "
+                    } else {
+                        error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                    }
                     }
                 }
             }
