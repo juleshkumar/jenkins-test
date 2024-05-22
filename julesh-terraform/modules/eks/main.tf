@@ -89,7 +89,7 @@ resource "aws_security_group" "eks_allow_vpc_cidr" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = [data.terraform_remote_state.vpc_state.outputs.vpc_cidr_block]
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   egress {
