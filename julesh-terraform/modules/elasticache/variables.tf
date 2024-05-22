@@ -35,14 +35,17 @@ variable "replication-id" {
 
 variable "auth_token" {
   type = string
+  default = PMZuzUmV85Bt+bh7aM5s2Pbl5d40PRwyx2RL29EiHds=
 }
 
 variable "num-node-groups" {
   description = "The number of node groups (shards) for this Redis replication group"
+  default = 1
   type        = number
 }
 
 variable "replicas-per-node-group" {
   description = "The number of replica nodes in each node group (shard)"
+  default = 1
   type        = number
 }
