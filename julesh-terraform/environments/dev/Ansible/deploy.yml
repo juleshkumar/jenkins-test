@@ -81,7 +81,7 @@
         mkdir -p /home/ubuntu/efs/elasticsearch
         chmod 0755 /home/ubuntu/efs/elasticsearch
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-0
-        chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-0
+        chmod 0777 -R /home/ubuntu/efs/elasticsearch/elasticsearch-0
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-1
         chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-1
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-2
