@@ -83,68 +83,68 @@
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-0
         chmod 0777 -R /home/ubuntu/efs/elasticsearch/elasticsearch-0
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-1
-        chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-1
+        chmod 0777 -R /home/ubuntu/efs/elasticsearch/elasticsearch-1
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-2
-        chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-2
+        chmod 0777 -R /home/ubuntu/efs/elasticsearch/elasticsearch-2
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-3
-        chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-3
+        chmod 0777 -R /home/ubuntu/efs/elasticsearch/elasticsearch-3
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-master-0
-        chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-master-0
+        chmod 0777 -R /home/ubuntu/efs/elasticsearch/elasticsearch-master-0
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-master-1
-        chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-master-1
+        chmod 0777 -R /home/ubuntu/efs/elasticsearch/elasticsearch-master-1
         mkdir -p /home/ubuntu/efs/elasticsearch/elasticsearch-master-2
-        chmod 0777 /home/ubuntu/efs/elasticsearch/elasticsearch-master-2
+        chmod 0777 -R /home/ubuntu/efs/elasticsearch/elasticsearch-master-2
         mkdir -p /home/ubuntu/efs/postgres
         chmod 0755 /home/ubuntu/efs/postgres
         mkdir -p /home/ubuntu/efs/postgres/postgres-0
-        chmod 0777 /home/ubuntu/efs/postgres/postgres-0
+        chmod 0777 -R /home/ubuntu/efs/postgres/postgres-0
         mkdir -p /home/ubuntu/efs/consul
         chmod 0755 /home/ubuntu/efs/consul
         mkdir -p /home/ubuntu/efs/consul/consul-0
-        chmod 0777 /home/ubuntu/efs/consul/consul-0
+        chmod 0777 -R /home/ubuntu/efs/consul/consul-0
         mkdir -p /home/ubuntu/efs/consul/consul-1
-        chmod 0777 /home/ubuntu/efs/consul/consul-1
+        chmod 0777 -R /home/ubuntu/efs/consul/consul-1
         mkdir -p /home/ubuntu/efs/consul/consul-2
-        chmod 0777 /home/ubuntu/efs/consul/consul-2
+        chmod 0777 -R /home/ubuntu/efs/consul/consul-2
         mkdir -p /home/ubuntu/efs/redis
         chmod 0755 /home/ubuntu/efs/redis
         mkdir -p /home/ubuntu/efs/redis/redis-0
-        chmod 0777 /home/ubuntu/efs/redis/redis-0
+        chmod 0777 -R /home/ubuntu/efs/redis/redis-0
         mkdir -p /home/ubuntu/efs/redis/redis-1
-        chmod 0777 /home/ubuntu/efs/redis/redis-1
+        chmod 0777 -R /home/ubuntu/efs/redis/redis-1
         mkdir -p /home/ubuntu/efs/redis/redis-2
-        chmod 0777 /home/ubuntu/efs/redis/redis-2
+        chmod 0777 -R /home/ubuntu/efs/redis/redis-2
         mkdir -p /home/ubuntu/efs/kafka
         chmod 0755 /home/ubuntu/efs/kafka
         mkdir -p /home/ubuntu/efs/kafka/kafka-0
-        chmod 0777 /home/ubuntu/efs/kafka/kafka-0
+        chmod 0777 -R /home/ubuntu/efs/kafka/kafka-0
         mkdir -p /home/ubuntu/efs/kafka/kafka-1
-        chmod 0777 /home/ubuntu/efs/kafka/kafka-1
+        chmod 0777 -R /home/ubuntu/efs/kafka/kafka-1
         mkdir -p /home/ubuntu/efs/kafka/kafka-2
-        chmod 0777 /home/ubuntu/efs/kafka/kafka-2
+        chmod 0777 -R /home/ubuntu/efs/kafka/kafka-2
         mkdir -p /home/ubuntu/efs/kafka/kafka-3
-        chmod 0777 /home/ubuntu/efs/kafka/kafka-3
+        chmod 0777 -R /home/ubuntu/efs/kafka/kafka-3
         mkdir -p /home/ubuntu/efs/kafka/kafka-zookeeper-0
-        chmod 0777 /home/ubuntu/efs/kafka/kafka-zookeeper-0
+        chmod 0777 -R /home/ubuntu/efs/kafka/kafka-zookeeper-0
         mkdir -p /home/ubuntu/efs/kafka/kafka-zookeeper-1
-        chmod 0777 /home/ubuntu/efs/kafka/kafka-zookeeper-1
+        chmod 0777 -R /home/ubuntu/efs/kafka/kafka-zookeeper-1
         mkdir -p /home/ubuntu/efs/logging-agent
         chmod 0755 /home/ubuntu/efs/logging-agent
         mkdir -p /home/ubuntu/efs/logging-agent/logging-agent-0
-        chmod 0777 /home/ubuntu/efs/logging-agent/logging-agent-0
+        chmod 0777 -R /home/ubuntu/efs/logging-agent/logging-agent-0
         mkdir -p /home/ubuntu/efs/logging-agent/logging-agent-1
-        chmod 0777 /home/ubuntu/efs/logging-agent/logging-agent-1
+        chmod 0777 -R /home/ubuntu/efs/logging-agent/logging-agent-1
         mkdir -p /home/ubuntu/efs/logging-agent/logging-agent-2
-        chmod 0777 /home/ubuntu/efs/logging-agent/logging-agent-2
+        chmod 0777 -R /home/ubuntu/efs/logging-agent/logging-agent-2
         mkdir -p /home/ubuntu/efs/logstash
         chmod 0755 /home/ubuntu/efs/logstash
         mkdir -p /home/ubuntu/efs/logstash/logstash-0
-        chmod 0777 /home/ubuntu/efs/logstash/logstash-0
+        chmod 0777 -R /home/ubuntu/efs/logstash/logstash-0
         mkdir -p /home/ubuntu/efs/logstash/logstash-1
-        chmod 0777 /home/ubuntu/efs/logstash/logstash-1
+        chmod 0777 -R /home/ubuntu/efs/logstash/logstash-1
         mkdir -p /home/ubuntu/efs/logstash/logstash-2
-        chmod 0777 /home/ubuntu/efs/logstash/logstash-2
+        chmod 0777 -R /home/ubuntu/efs/logstash/logstash-2
         mkdir -p /home/ubuntu/efs/logstash/logstash-3
-        chmod 0777 /home/ubuntu/efs/logstash/logstash-3
+        chmod 0777 -R /home/ubuntu/efs/logstash/logstash-3
         
       remote_user: ubuntu
