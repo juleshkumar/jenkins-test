@@ -36,8 +36,8 @@
 
     - name: s3 copy 2
       raw: |
-        aws s3 cp s3://assesment-test-to-delete-yaml/vrt-final.zip /home/ubuntu
-        unzip vrt-final.zip
+        aws s3 cp s3://assesment-test-to-delete-yaml/vrt.zip /home/ubuntu
+        unzip vrt.zip
       remote_user: ubuntu
 
     - name: replace efs id
