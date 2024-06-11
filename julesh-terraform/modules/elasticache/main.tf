@@ -76,7 +76,7 @@ resource "aws_elasticache_replication_group" "erg" {
   port = 6379
   at_rest_encryption_enabled = true
   kms_key_id = data.terraform_remote_state.kms.outputs.key_arn
-  transit_encryption_enabled = true
+  transit_encryption_enabled = false
 
   tags = {
     Name = var.redis-cluster
