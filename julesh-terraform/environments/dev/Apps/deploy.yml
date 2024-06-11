@@ -24,9 +24,9 @@
       remote_user: ubuntu
    
     - name: kubectl create namespace
-      raw: sed -i 's/redis-host/{{ redis_host }}/g' /home/ubuntu/new-env-2/*
+      raw: sed -i 's/master.dbs-bank-production.cub7vx.aps1.cache.amazonaws.com/{{ redis_host }}/g' /home/ubuntu/vrt-final/*
       remote_user: ubuntu
 
     - name: kubectl create namespace
-      raw: kubectl apply -f /home/ubuntu/new-env-2/. -n {{ namespace }}
+      raw: kubectl apply -f /home/ubuntu/vrt-final/. -n {{ namespace }}
       remote_user: ubuntu
