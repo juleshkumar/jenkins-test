@@ -1,0 +1,77 @@
+- name: Attach EFS to server and kube-bench and security score genrator
+  hosts: ec2
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Install unzip
+      raw: apt install -y  unzip
+      remote_user: ubuntu
+
+    - name: Install python3-pip
+      raw: apt install -y python3-pip
+      remote_user: ubuntu
+
+    - name: Install boto3
+      raw: pip install boto3
+      remote_user: ubuntu
+
+    - name: Download and install awscli
+      raw: |
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+      remote_user: ubuntu
+
+    - name: Install kubectl
+      raw: snap install kubectl --classic --channel=stable
+      remote_user: ubuntu
+
+
+    - name: Set AWS access key ID
+      raw: aws configure set aws_access_key_id "{{ aws_access_key_id }}"
+      when: aws_access_key_id is defined
+      remote_user: ubuntu
+
+    - name: Set AWS secret access key
+      raw: aws configure set aws_secret_access_key "{{ aws_secret_access_key }}"
+      when: aws_secret_access_key is defined
+      remote_user: ubuntu
+
+    - name: Set AWS region
+      raw: aws configure set region "{{ aws_region }}"
+      when: aws_region is defined
+      remote_user: ubuntu
+
+    - name: Set AWS output format
+      raw: aws configure set output "{{ aws_output_format }}"
+      when: aws_output_format is defined
+      remote_user: ubuntu
+
+    - name: Update kubeconfig for EKS cluster
+      raw: aws eks update-kubeconfig --name {{ cluster_name }} --region {{ region }}
+      remote_user: ubuntu
+
+    - name: s3 copy 1
+      raw: aws s3 cp s3://assesment-test-to-delete-yaml/job-eks.yaml /home/ubuntu
+      remote_user: ubuntu
+
+    - name: s3 copy 2
+      raw: aws s3 cp s3://assesment-test-to-delete-yaml/scoreGenerator.py /home/ubuntu
+      remote_user: ubuntu
+
+    - name: apply job-eks-yaml
+      raw: kubectl apply -f /home/ubuntu/job-eks.yaml
+      remote_user: ubuntu
+
+    - name: save pod name
+      raw: kubectl get pods > output.txt
+      remote_user: ubuntu
+
+    - name: get logs for kube bench
+      raw: kubectl logs $(awk 'NR==2 {print $1}' output.txt) > kube-bench-logs.txt
+      remote_user: ubuntu
+    
+    - name: get score genrator 
+      raw: python3 scoreGenerator.py default > out.txt
+      remote_user: ubuntu
+    
