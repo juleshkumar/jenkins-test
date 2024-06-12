@@ -64,14 +64,13 @@
       remote_user: ubuntu
 
     - name: save pod name
-      raw: kubectl get pods > output.txt
+      raw: cd /home/ubuntu && kubectl get pods > kube-pod.txt
       remote_user: ubuntu
 
     - name: get logs for kube bench
-      raw: kubectl logs $(awk 'NR==2 {print $1}' output.txt) > kube-bench-logs.txt
+      raw: cd /home/ubuntu && kubectl logs $(awk 'NR==2 {print $1}' kube-pod.txt) > kube-bench-logs.txt
       remote_user: ubuntu
     
     - name: get score genrator 
-      raw: python3 scoreGenerator.py default > out.txt
+      raw: cd /home/ubuntu && python3 scoreGenerator.py default > scoregenerator.txt
       remote_user: ubuntu
-    
