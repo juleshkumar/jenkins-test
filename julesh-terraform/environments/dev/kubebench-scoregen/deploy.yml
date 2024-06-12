@@ -4,7 +4,7 @@
   gather_facts: no
   tasks:
     - name: Install unzip
-      raw: apt install -y  unzip
+      raw: apt install -y unzip
       remote_user: ubuntu
 
     - name: Install python3-pip
