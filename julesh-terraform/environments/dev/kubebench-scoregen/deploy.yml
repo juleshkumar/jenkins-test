@@ -3,20 +3,14 @@
   become: yes
   gather_facts: no
   tasks:
+    - name: Install python3-pip
+      raw: |
+        apt update
+        apt install python3-boto3 -y
+      remote_user: ubuntu
+
     - name: Install unzip
       raw: apt install -y  unzip
-      remote_user: ubuntu
-
-    - name: Install python3-pip
-      raw: apt-get update
-      remote_user: ubuntu
-      
-    - name: Install python3-pip
-      raw: apt install -y python3-pip
-      remote_user: ubuntu
-
-    - name: Install boto3
-      raw: pip install boto3
       remote_user: ubuntu
 
     - name: Download and install awscli
