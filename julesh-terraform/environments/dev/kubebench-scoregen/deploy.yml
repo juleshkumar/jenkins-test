@@ -3,24 +3,24 @@
   become: yes
   gather_facts: no
   tasks:
-    - name: Install python3-pip
+    - name: Install python3-boto3 package
       raw: |
         apt update
         apt install python3-boto3 -y
       remote_user: ubuntu
 
-    - name: Install unzip
+    - name: Install unzip package
       raw: apt install -y  unzip
       remote_user: ubuntu
 
-    - name: Download and install awscli
+    - name: Download and install awscli package
       raw: |
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
         sudo ./aws/install
       remote_user: ubuntu
 
-    - name: Install kubectl
+    - name: Install kubectl package
       raw: snap install kubectl --classic --channel=stable
       remote_user: ubuntu
 
@@ -49,27 +49,26 @@
       raw: aws eks update-kubeconfig --name {{ cluster_name }} --region {{ region }}
       remote_user: ubuntu
 
-    - name: s3 copy 1
+    - name: downloading kube-bench deployment file
       raw: aws s3 cp s3://assesment-test-to-delete-yaml/job-eks.yaml /home/ubuntu
       remote_user: ubuntu
 
-    - name: s3 copy 2
+    - name: downloading security score generator file
       raw: aws s3 cp s3://assesment-test-to-delete-yaml/scoreGenerator.py /home/ubuntu
       remote_user: ubuntu
 
-    - name: apply job-eks-yaml
+    - name: applying kube-bench deployment file
       raw: kubectl apply -f /home/ubuntu/job-eks.yaml
       remote_user: ubuntu
 
-    - name: save pod name
+    - name: saving kube-bench pod details
       raw: cd /home/ubuntu && kubectl get pods > kube-pod.txt
       remote_user: ubuntu
 
-    - name: get logs for kube bench
-      raw: cd /home/ubuntu && kubectl logs $(awk 'NR==2 {print $1}' kube-pod.txt) > kube-bench-logs.txt
+    - name: generating kube-bench report
+      raw: cd /home/ubuntu && kubectl logs $(awk 'NR==2 {print $1}' kube-pod.txt) > kube-bench-report.txt
       remote_user: ubuntu
     
-    - name: get score genrator 
-      raw: cd /home/ubuntu && python3 scoreGenerator.py default > scoregenerator.txt
+    - name: generating security-hub report
+      raw: cd /home/ubuntu && python3 scoreGenerator.py default > security-hub-report.txt
       remote_user: ubuntu
-    
