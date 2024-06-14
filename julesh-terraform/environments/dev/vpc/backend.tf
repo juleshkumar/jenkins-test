@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket   = "terrafrom-test-to-delete-bucket"
+    bucket     = var.AWS_BUCKET_NAME
     key      = "backend/vpc"
-    region   = "ap-south-1"
+    region     = var.AWS_REGION
   }
 }
