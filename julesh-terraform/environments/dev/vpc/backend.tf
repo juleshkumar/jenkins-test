@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket     = var.AWS_BUCKET_NAME
-    key      = "backend/vpc"
-    region     = var.AWS_REGION
+    bucket     = "terrafrom-test-to-delete-bucket"
+    key        = "backend/jumpbox"
+    region     = "ap-south-1"
   }
 }
