@@ -67,7 +67,7 @@ resource "aws_elasticache_user" "redis_user" {
 
 resource "aws_elasticache_user_group" "redis_user_group" {
   user_group_id = "user-group-redis"
-  engine        = var.redis-engine
+  engine        = "REDIS"
   user_ids      = [aws_elasticache_user.redis_user.user_id]
 
   tags = {
