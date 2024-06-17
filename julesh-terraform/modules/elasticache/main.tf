@@ -55,7 +55,7 @@ resource "aws_elasticache_subnet_group" "eccr" {
 resource "aws_elasticache_user" "redis_user" {
   user_id   = var.redis-user-id
   user_name = var.redis-user-name
-  engine    = var.redis-engine
+  engine    = "REDIS"
   passwords = [var.redis_password]  
   access_string = "on ~* +@all"  # Adjust access string as needed
 
