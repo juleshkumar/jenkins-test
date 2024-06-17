@@ -12,9 +12,7 @@ module "elasticache" {
   replicas-per-node-group = var.replicas-per-node-group
   rest_encryption         = var.rest_encryption
   environment             = var.environment
-  ec_key                  = var.ec_key
   redis_password          = var.redis_password
-  kms_key                 = var.kms_key
   redis-user-id           = var.redis-user-id
   redis-user-name         = var.redis-user-name
   transit_encryption_enabled = var.transit_encryption_enabled
