@@ -18,13 +18,8 @@ output "redis_cluster_endpoint" {
   description = "The endpoint of the Redis cluster"
   value       = aws_elasticache_replication_group.erg.primary_endpoint_address
 }
- 
+
 output "redis_cluster_configuration_endpoint" {
   description = "The configuration endpoint of the Redis cluster"
   value       = aws_elasticache_replication_group.erg.configuration_endpoint_address
 }
-
-
-
-
-
