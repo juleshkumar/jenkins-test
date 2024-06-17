@@ -13,17 +13,6 @@
         apt-get install -y nfs-common
       remote_user: ubuntu
 
-    - name: Install unzip
-      raw: apt install -y  unzip
-      remote_user: ubuntu
-
-    - name: Download and install awscli
-      raw: |
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-        unzip awscliv2.zip
-        sudo ./aws/install
-      remote_user: ubuntu
-
 
 
 
@@ -37,10 +26,6 @@
 
     - name: Install redis-tool
       raw: apt-get install -y redis-tools
-      remote_user: ubuntu
-
-    - name: Install kubectl
-      raw: snap install kubectl --classic --channel=stable
       remote_user: ubuntu
 
 
