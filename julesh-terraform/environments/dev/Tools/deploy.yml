@@ -24,10 +24,6 @@
       when: aws_output_format is defined
       remote_user: ubuntu
 
-    - name: Update kubeconfig for EKS cluster
-      raw: aws eks update-kubeconfig --name {{ cluster_name }} --region {{ region }}
-      remote_user: ubuntu
-
     - name: s3 copy 1
       raw: |
         aws s3 cp s3://assesment-test-to-delete-yaml/new-env.zip /home/ubuntu
