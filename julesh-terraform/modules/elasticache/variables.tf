@@ -56,10 +56,6 @@ variable "environment" {
   type = string
 }
 
-variable "ec_key" {
-  type = string
-}
-
 variable "redis_password" {
   type = string
 }
