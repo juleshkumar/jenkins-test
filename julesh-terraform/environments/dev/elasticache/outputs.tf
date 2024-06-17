@@ -19,14 +19,8 @@ output "redis_cluster_endpoint" {
   description = "The endpoint of the Redis cluster"
   value       = module.elasticache.redis_cluster_endpoint
 }
- 
+
 output "redis_cluster_configuration_endpoint" {
   description = "The configuration endpoint of the Redis cluster"
   value       = module.elasticache.redis_cluster_configuration_endpoint
 }
-
-
-
-
-
-
