@@ -64,10 +64,6 @@ variable "redis_password" {
   type = string
 }
 
-variable "kms_key" {
-  type = string
-}
-
 variable "redis-user-id" {
   type = string
 }
