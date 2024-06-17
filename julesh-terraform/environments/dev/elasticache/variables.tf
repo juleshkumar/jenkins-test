@@ -23,16 +23,6 @@ variable "redis-node-type" {
 #  type        = number
 #}
 
-variable "num-node-groups" {
-  description = "The number of node groups (shards) for this Redis replication group"
-  type        = number
-}
-
-variable "replicas-per-node-group" {
-  description = "The number of replica nodes in each node group (shard)"
-  type        = number
-}
-
 variable "parameter-group-family" {
   description = "The initial number of cache nodes that the cache cluster has"
   type        = string
@@ -43,8 +33,19 @@ variable "replication-id" {
   description = "(optional) describe your variable"
 }
 
+
 variable "auth_token" {
   type = string
+}
+
+variable "num-node-groups" {
+  description = "The number of node groups (shards) for this Redis replication group"
+  type        = number
+}
+
+variable "replicas-per-node-group" {
+  description = "The number of replica nodes in each node group (shard)"
+  type        = number
 }
 
 variable "rest_encryption" {
@@ -56,15 +57,7 @@ variable "environment" {
   type = string
 }
 
-variable "ec_key" {
-  type = string
-}
-
 variable "redis_password" {
-  type = string
-}
-
-variable "kms_key" {
   type = string
 }
 
