@@ -44,6 +44,13 @@ resource "aws_security_group" "tf-sg" {
   vpc_id      = data.terraform_remote_state.vpc_state.outputs.vpc_id
   name        = var.lb_security_group
   description = var.lb_security_group
+  ingress {
+    from_port   = 80  # HTTP port
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
