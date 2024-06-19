@@ -53,3 +53,10 @@ variable "security-group-cidr" {
   description = "cidr range of the security group"
 }
 
+variable "region" {
+  type = string
+}
+
+variable "backend_bucket" {
+  type = string
+}
