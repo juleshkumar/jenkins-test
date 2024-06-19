@@ -16,4 +16,6 @@ module "elasticache" {
   redis-user-id           = var.redis-user-id
   redis-user-name         = var.redis-user-name
   transit_encryption_enabled = var.transit_encryption_enabled
+  backend_bucket     = var.backend_bucket
+  region             = var.region
 }
