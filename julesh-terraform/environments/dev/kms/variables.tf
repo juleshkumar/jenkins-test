@@ -3,10 +3,3 @@ variable "kms_key_name" {
   description = "(optional) describe your variable"
 }
 
-variable "region" {
-  type = string
-}
-
-variable "backend_bucket" {
-  type = string
-}
