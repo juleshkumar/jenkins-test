@@ -12,4 +12,6 @@ module "load_balancer" {
   security-group-cidr    = var.security-group-cidr
   target-group-name      = var.target-group-name
   autoscaling-group-name = var.autoscaling-group-name
+  backend_bucket     = var.backend_bucket
+  region             = var.region
 }
