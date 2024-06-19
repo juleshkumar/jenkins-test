@@ -1,4 +1,8 @@
-#AWS Account Number
+#AWS Account Numbe
+variable "public_key_file" {
+  type        = string
+  description = "File path to the public key file"
+}
 
 variable "ami" {
   type        = string
@@ -16,6 +20,19 @@ variable "ec2_instance_type" {
 }
 
 variable "js_user" {
-  type = string
+  type        = string
   description = "jumpser username"
+}
+
+variable "environment" {
+  type = string
+}
+
+
+variable "region" {
+  type = string
+}
+
+variable "backend_bucket" {
+  type = string
 }
