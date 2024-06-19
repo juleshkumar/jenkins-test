@@ -20,3 +20,11 @@ variable "js_user" {
   type = string
   description = "jumpser username"
 }
+
+variable "region" {
+  type = string
+}
+
+variable "backend_bucket" {
+  type = string
+}
