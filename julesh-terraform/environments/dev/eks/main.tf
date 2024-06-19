@@ -16,4 +16,6 @@ module "eks" {
   k8s_version                    = var.k8s_version
   public_key_file                = var.public_key_file
   eks_key_name                   = var.eks_key_name
+  backend_bucket     = var.backend_bucket
+  region             = var.region
 }
