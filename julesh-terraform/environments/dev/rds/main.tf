@@ -10,4 +10,6 @@ module "postgres" {
   vrt_db_security_group      = var.vrt_db_security_group
   database_password          = var.database_password
   database_user              = var.database_user
+  backend_bucket     = var.backend_bucket
+  region             = var.region
 }
