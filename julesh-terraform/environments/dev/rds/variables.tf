@@ -48,3 +48,11 @@ variable "vrt__db_cidr_range" {
   type        = string
   description = "VRT CIDR Range"
 }
+
+variable "region" {
+  type = string
+}
+
+variable "backend_bucket" {
+  type = string
+}
