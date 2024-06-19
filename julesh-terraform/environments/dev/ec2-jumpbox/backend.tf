@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket     = "terrafrom-test-to-delete-bucket"
+    bucket     = var.backend_bucket
     key        = "backend/jumpbox"
-    region     = "ap-south-1"
+    region     = var.region
   }
 }
