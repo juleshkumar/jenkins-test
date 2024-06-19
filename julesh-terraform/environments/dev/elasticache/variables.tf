@@ -72,3 +72,11 @@ variable "redis-user-name" {
 variable "transit_encryption_enabled" {
   type = bool
 }
+
+variable "region" {
+  type = string
+}
+
+variable "backend_bucket" {
+  type = string
+}
