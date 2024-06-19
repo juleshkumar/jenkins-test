@@ -69,6 +69,14 @@ variable "public_key_file" {
   description = "File path to the public key file"
 }
 
+variable "region" {
+  type = string
+}
+
+variable "backend_bucket" {
+  type = string
+}
+
 variable "eks_key_name" {
   type = string
   description = "(optional) describe your variable"
