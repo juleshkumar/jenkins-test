@@ -167,7 +167,7 @@ resource "aws_security_group" "efs_mount_target_sg" {
 
 resource "aws_eks_node_group" "spot" {
   cluster_name    = data.terraform_remote_state.eks.outputs.eks_cluster_id
-  node_group_name = "${var.cluster-name}-spot"
+  node_group_name = "${var.cluster-name}-vrt-tools"
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = data.terraform_remote_state.vpc_state.outputs.private_subnet_ids
   instance_types  = [var.instance-type-spot]
@@ -201,7 +201,7 @@ resource "aws_eks_node_group" "spot" {
   }
 
   tags = {
-    "Name" = "${var.cluster-name}-spot"
+    "Name" = "${var.cluster-name}-vrt-tools"
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
@@ -215,7 +215,7 @@ resource "aws_eks_node_group" "spot" {
 
 resource "aws_eks_node_group" "on_demand" {
   cluster_name    = data.terraform_remote_state.eks.outputs.eks_cluster_id
-  node_group_name = "${var.cluster-name}-demand"
+  node_group_name = "${var.cluster-name}-vrt-application"
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = data.terraform_remote_state.vpc_state.outputs.private_subnet_ids
   instance_types  = [var.instance-type-on-demand]
@@ -245,7 +245,7 @@ resource "aws_eks_node_group" "on_demand" {
     create_before_destroy = true
   }
   tags = {
-    "Name" = "${var.cluster-name}-demand"
+    "Name" = "${var.cluster-name}-vrt-application"
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
@@ -258,4 +258,95 @@ resource "aws_eks_node_group" "on_demand" {
 }
 
 
+resource "aws_eks_node_group" "nginx_on_demand" {
+  cluster_name    = data.terraform_remote_state.eks.outputs.eks_cluster_id
+  node_group_name = "${var.cluster-name}-nginx"
+  node_role_arn   = aws_iam_role.node.arn
+  subnet_ids      = data.terraform_remote_state.vpc_state.outputs.private_subnet_ids
+  instance_types  = [var.instance-type-on-demand]
+  capacity_type   = var.instance_capacity_types_demand
+  disk_size       = var.inst_disk_size
+  
 
+
+  labels = {
+    vrt-cug-nginx     = "true",
+  }
+
+  taint {
+    key    = "key"
+    value  = "persistTool"
+    effect = "NO_SCHEDULE"
+  }
+
+
+  scaling_config {
+    desired_size = var.num-workers-demand
+    max_size     = var.max-workers-demand
+    min_size     = var.num-workers-demand
+  }
+
+    remote_access {
+      ec2_ssh_key = aws_key_pair.eks.key_name
+      source_security_group_ids = [aws_security_group.efs_mount_target_sg.id]
+    }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+  tags = {
+    "Name" = "${var.cluster-name}-nginx"
+  }
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.node-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.node-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.node-AmazonEC2ContainerRegistryReadOnly,
+  ]
+}
+
+
+resource "aws_eks_node_group" "custom_app_on_demand" {
+  cluster_name    = data.terraform_remote_state.eks.outputs.eks_cluster_id
+  node_group_name = "${var.cluster-name}-custom-application"
+  node_role_arn   = aws_iam_role.node.arn
+  subnet_ids      = data.terraform_remote_state.vpc_state.outputs.private_subnet_ids
+  instance_types  = [var.instance-type-on-demand]
+  capacity_type   = var.instance_capacity_types_demand
+  disk_size       = var.inst_disk_size
+  
+
+
+  labels = {
+    custom-application = "true",
+  }
+
+
+  scaling_config {
+    desired_size = var.num-workers-demand
+    max_size     = var.max-workers-demand
+    min_size     = var.num-workers-demand
+  }
+
+    remote_access {
+      ec2_ssh_key = aws_key_pair.eks.key_name
+      source_security_group_ids = [aws_security_group.efs_mount_target_sg.id]
+    }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+  tags = {
+    "Name" = "${var.cluster-name}-custom-app"
+  }
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.node-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.node-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.node-AmazonEC2ContainerRegistryReadOnly,
+  ]
+}
