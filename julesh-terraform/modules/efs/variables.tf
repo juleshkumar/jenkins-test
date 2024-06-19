@@ -8,3 +8,10 @@ variable "efs-security-group" {
   type        = string
 }
 
+variable "region" {
+  type = string
+}
+
+variable "backend_bucket" {
+  type = string
+}
