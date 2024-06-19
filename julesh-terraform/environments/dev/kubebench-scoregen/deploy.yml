@@ -54,7 +54,7 @@
       remote_user: ubuntu
 
     - name: downloading security score generator file
-      raw: aws s3 cp s3://assesment-test-to-delete-yaml/scoreGenerator.py /home/ubuntu
+      raw: aws s3 cp s3://assesment-test-to-delete-yaml/secscore.py /home/ubuntu
       remote_user: ubuntu
 
     - name: applying kube-bench deployment file
@@ -65,10 +65,22 @@
       raw: cd /home/ubuntu && kubectl get pods > kube-pod.txt
       remote_user: ubuntu
 
+    - name: creating date stamp
+      raw: cd /home/ubuntu && DATE=$(date '+%Y-%m-%d_%H-%M-%S')
+      remote_user: ubuntu
+
     - name: generating kube-bench report
-      raw: cd /home/ubuntu && kubectl logs $(awk 'NR==2 {print $1}' kube-pod.txt) > kube-bench-report.txt
+      raw: cd /home/ubuntu && kubectl logs $(awk 'NR==2 {print $1}' kube-pod.txt) > kube-bench-report_${DATE}.txt
+      remote_user: ubuntu
+
+    - name: generating kube-bench report
+      raw: aws s3 cp "/home/ubuntu/kube-bench-report_${DATE}.txt" s3://assesment-test-to-delete-yaml/
       remote_user: ubuntu
     
     - name: generating security-hub report
-      raw: cd /home/ubuntu && python3 scoreGenerator.py default > security-hub-report.txt
+      raw: cd /home/ubuntu && python3 secscore.py default > security-hub-report_${DATE}.txt
+      remote_user: ubuntu
+
+    - name: generating security-hub report
+      raw: aws s3 cp "/home/ubuntu/security-hub-report_${DATE}.txt" s3://assesment-test-to-delete-yaml/
       remote_user: ubuntu
