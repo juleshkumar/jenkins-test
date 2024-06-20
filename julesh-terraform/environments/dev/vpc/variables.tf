@@ -60,3 +60,12 @@ variable "private-subnet_mask" {
   description = "Subnet mask value for CIDR calculation"
 }
 
+variable "region" {
+  type = string
+}
+
+variable "backend_bucket" {
+  type = string
+}
+
+
