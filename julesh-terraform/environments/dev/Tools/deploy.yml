@@ -26,13 +26,13 @@
 
     - name: tools yaml downloading
       raw: |
-        aws s3 cp s3://terraform-demo-test-to-delete/new-env.zip /home/ubuntu
+        aws s3 cp s3://vrt-microservices-decimal/new-env.zip /home/ubuntu
         unzip new-env.zip
       remote_user: ubuntu
 
     - name: app micro services downloading
       raw: |
-        aws s3 cp s3://terraform-demo-test-to-delete/vrt.zip /home/ubuntu
+        aws s3 cp s3://vrt-microservices-decimal/vrt.zip /home/ubuntu
         unzip vrt.zip
       remote_user: ubuntu
 
