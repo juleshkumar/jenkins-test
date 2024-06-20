@@ -24,7 +24,7 @@
       remote_user: ubuntu
 
     - name: Update kubeconfig for EKS cluster
-      raw: aws eks update-kubeconfig --name {{ cluster_name }} --region {{ region }}
+      raw: aws eks update-kubeconfig --name eks-decimal-test --region {{ region }}
       remote_user: ubuntu
 
     - name: Mount EFS
