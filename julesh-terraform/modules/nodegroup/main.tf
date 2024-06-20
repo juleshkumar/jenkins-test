@@ -258,9 +258,9 @@ resource "aws_eks_node_group" "on_demand" {
 }
 
 
-resource "aws_eks_node_group" "nginx_on_demand" {
+resource "aws_eks_node_group" "new_nginx_on_demand" {
   cluster_name    = data.terraform_remote_state.eks.outputs.eks_cluster_id
-  node_group_name = "${var.cluster-name}-nginx"
+  node_group_name = "${var.cluster-name}-new-nginx"
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = data.terraform_remote_state.vpc_state.outputs.private_subnet_ids
   instance_types  = [var.instance-type-on-demand]
@@ -295,7 +295,7 @@ resource "aws_eks_node_group" "nginx_on_demand" {
     create_before_destroy = true
   }
   tags = {
-    "Name" = "${var.cluster-name}-nginx"
+    "Name" = "${var.cluster-name}-new-nginx"
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
