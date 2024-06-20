@@ -24,15 +24,15 @@
       when: aws_output_format is defined
       remote_user: ubuntu
 
-    - name: s3 copy 1
+    - name: tools yaml downloading
       raw: |
-        aws s3 cp s3://assesment-test-to-delete-yaml/new-env.zip /home/ubuntu
+        aws s3 cp s3://terraform-demo-test-to-delete/new-env.zip /home/ubuntu
         unzip new-env.zip
       remote_user: ubuntu
 
-    - name: s3 copy 2
+    - name: app micro services downloading
       raw: |
-        aws s3 cp s3://assesment-test-to-delete-yaml/vrt.zip /home/ubuntu
+        aws s3 cp s3://terraform-demo-test-to-delete/vrt.zip /home/ubuntu
         unzip vrt.zip
       remote_user: ubuntu
 
