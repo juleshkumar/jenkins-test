@@ -5,7 +5,3 @@ variable "kms_key_name" {
 variable "region" {
   type = string
 }
-
-variable "backend_bucket" {
-  type = string
-}
