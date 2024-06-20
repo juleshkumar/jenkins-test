@@ -68,10 +68,6 @@
     - name: creating date stamp
       raw: cd /home/ubuntu && DATE=$(date '+%Y-%m-%d_%H-%M-%S')
       remote_user: ubuntu
-
-    - name: generating kube-bench report
-      raw: aws s3 cp "/home/ubuntu/kube-bench-report_${DATE}.txt" s3://terraform-demo-test-to-delete/
-      remote_user: ubuntu
     
     - name: generating security-hub report
       raw: cd /home/ubuntu && python3 secscore.py default > security-hub-report_${DATE}.txt
@@ -83,4 +79,8 @@
 
     - name: generating kube-bench report
       raw: cd /home/ubuntu && kubectl logs $(awk 'NR==2 {print $1}' kube-pod.txt) > kube-bench-report_${DATE}.txt
+      remote_user: ubuntu
+
+    - name: generating kube-bench report
+      raw: aws s3 cp "/home/ubuntu/kube-bench-report_${DATE}.txt" s3://terraform-demo-test-to-delete/
       remote_user: ubuntu
