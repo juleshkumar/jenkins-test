@@ -48,11 +48,3 @@
     - name: Update kubeconfig for EKS cluster
       raw: aws eks update-kubeconfig --name {{ cluster_name }} --region {{ region }}
       remote_user: ubuntu
-
-    - name: downloading kube-bench deployment file
-      raw: aws s3 cp s3://terraform-demo-test-to-delete/job-eks.yaml /home/ubuntu
-      remote_user: ubuntu
-
-    - name: downloading security score generator file
-      raw: aws s3 cp s3://terraform-demo-test-to-delete/secscore.py /home/ubuntu
-      remote_user: ubuntu
