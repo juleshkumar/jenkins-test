@@ -50,11 +50,11 @@
       remote_user: ubuntu
 
     - name: downloading kube-bench deployment file
-      raw: aws s3 cp s3://assesment-test-to-delete-yaml/job-eks.yaml /home/ubuntu
+      raw: aws s3 cp s3://terraform-demo-test-to-delete/job-eks.yaml /home/ubuntu
       remote_user: ubuntu
 
     - name: downloading security score generator file
-      raw: aws s3 cp s3://assesment-test-to-delete-yaml/secscore.py /home/ubuntu
+      raw: aws s3 cp s3://terraform-demo-test-to-delete/secscore.py /home/ubuntu
       remote_user: ubuntu
 
     - name: applying kube-bench deployment file
@@ -70,11 +70,7 @@
       remote_user: ubuntu
 
     - name: generating kube-bench report
-      raw: cd /home/ubuntu && kubectl logs $(awk 'NR==2 {print $1}' kube-pod.txt) > kube-bench-report_${DATE}.txt
-      remote_user: ubuntu
-
-    - name: generating kube-bench report
-      raw: aws s3 cp "/home/ubuntu/kube-bench-report_${DATE}.txt" s3://assesment-test-to-delete-yaml/
+      raw: aws s3 cp "/home/ubuntu/kube-bench-report_${DATE}.txt" s3://terraform-demo-test-to-delete/
       remote_user: ubuntu
     
     - name: generating security-hub report
@@ -82,5 +78,9 @@
       remote_user: ubuntu
 
     - name: generating security-hub report
-      raw: aws s3 cp "/home/ubuntu/security-hub-report_${DATE}.txt" s3://assesment-test-to-delete-yaml/
+      raw: aws s3 cp "/home/ubuntu/security-hub-report_${DATE}.txt" s3://terraform-demo-test-to-delete/
+      remote_user: ubuntu
+
+    - name: generating kube-bench report
+      raw: cd /home/ubuntu && kubectl logs $(awk 'NR==2 {print $1}' kube-pod.txt) > kube-bench-report_${DATE}.txt
       remote_user: ubuntu
